@@ -15,6 +15,7 @@ server.auth(({ userId, token }) => {
 });
 
 let count = 0;
+let rooms = [];
 
 server.channel('counter', {
   access() {
@@ -39,6 +40,44 @@ server.type('counter/INC', {
     // Don’t forget to keep action atomic
 
     count += 1;
+  },
+});
+
+server.channel('foyer', {
+  access() {
+    return true;
+  },
+
+  async load(ctx) {
+    // Load initial state when client subscribing to the channel.
+    // You can use any database.
+    return { type: 'foyer/LIST_ROOMS', payload: rooms };
+  },
+});
+
+server.type('foyer/LIST_ROOMS', {
+  access() {
+    return true;
+  },
+  resend() {
+    return 'foyer';
+  },
+  async process(ctx) {
+    // noop
+    ctx.sendBack({ type: 'foyer/LIST_ROOMS', payload: rooms });
+  },
+});
+
+server.type('foyer/ADD_ROOM', {
+  access() {
+    return true;
+  },
+  resend() {
+    return 'foyer';
+  },
+  async process(ctx, action) {
+    rooms.push(action.payload);
+    ctx.sendBack({ type: 'foyer/LIST_ROOMS', payload: rooms });
   },
 });
 

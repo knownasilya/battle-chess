@@ -8,11 +8,15 @@ import { Channel } from '../services/core';
 interface Options {
   defaultValue?: unknown;
   key?: string;
+  channelKey?: string;
 }
 type Context = { channel: Channel } & Record<string, unknown>;
 type Action = { type: string } & Record<string, unknown>;
 
-export function sync(action: string, { defaultValue, key }: Options = {}): any {
+export function sync(
+  action: string,
+  { defaultValue, key, channelKey }: Options = {}
+): any {
   return function (_target: Context, name: string) {
     const storageKey = `_${name}`;
     return {
@@ -22,9 +26,12 @@ export function sync(action: string, { defaultValue, key }: Options = {}): any {
       get(this: Context) {
         if (!this[storageKey]) {
           this[storageKey] = createStorage(defaultValue);
-          this.channel.type(action, (action: Action) => {
-            this[name] = action[key ? key : 'payload'];
-          });
+          (this[channelKey || 'channel'] as Channel).type(
+            action,
+            (action: Action) => {
+              this[name] = action[key ? key : 'payload'];
+            }
+          );
         }
 
         return getValue(this[storageKey] as TrackedStorage<unknown>);

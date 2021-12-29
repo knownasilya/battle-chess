@@ -1,0 +1,14 @@
+{{#if this.rooms}}
+  <ul>
+    {{#each this.rooms as |room|}}
+      <li>{{room}}</li>
+    {{/each}}
+  </ul>
+{{else}}
+  <p>No rooms yet. Maybe add one?</p>
+{{/if}}
+
+<form {{on 'submit' this.addRoom}}>
+  <input name='name' placeholder='room name' />
+  <button type='submit'>Add Room</button>
+</form>
