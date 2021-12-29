@@ -5,8 +5,69 @@ import { badgeStyles } from '@logux/client/badge/styles';
 import { loguxSubscribe, loguxUnsubscribe } from '@logux/actions';
 import Component from '@glimmer/component';
 import { getOwner } from '@ember/application';
+import { ArgsWrapper, Resource } from 'ember-resources';
+import { helper } from '@ember/component/helper';
+import { ClientActionListener } from '@logux/client/client';
 
-export class Channel {
+export class Channel extends Resource {
+  owner: any;
+  channel: string;
+
+  constructor(
+    owner: any,
+    args: { positional: [channel: string] },
+    previous?: any
+  ) {
+    super(owner, args as ArgsWrapper, previous);
+    this.channel = args.positional[0];
+    this.owner = owner;
+
+    if (!previous) {
+      this.core.subscribeChannel(this.channel);
+    } else {
+      // update
+      this.core.unsubscribeChannel(previous.args.positional[0]);
+      this.core.subscribeChannel(this.channel);
+    }
+
+    registerDestructor(this, () => {
+      this.core.unsubscribeChannel(this.channel);
+    });
+  }
+
+  get core(): Core {
+    return this.owner.lookup('service:core');
+  }
+
+  sync(type: string, payload?: unknown) {
+    this.core.sync(`${this.channel}/${type}`, payload);
+  }
+
+  local(type: string, payload?: unknown) {
+    this.core.local(`${this.channel}/${type}`, payload);
+  }
+
+  type(
+    type: string,
+    listener: ClientActionListener<{ type: string; payload?: unknown }>
+  ) {
+    this.core.client.type(`${this.channel}/${type}`, listener);
+  }
+
+  syncType = helper(
+    ([type, payload]: [type: string, payload?: unknown]) =>
+      () =>
+        this.sync(type, payload)
+  );
+
+  localType = helper(
+    ([type, payload]: [type: string, payload?: unknown]) =>
+      () =>
+        this.local(type, payload)
+  );
+}
+
+export class Channel2 {
   name: string;
   instance: Component;
 
@@ -47,18 +108,16 @@ export default class Core extends Service {
     this.client = client;
   }
 
-  subscribeChannel(channel: string, component: Component) {
+  subscribeChannel(channel: string) {
     this.client.sync(loguxSubscribe({ channel })).then(() => {
       console.log('subscribed');
     });
+  }
 
-    registerDestructor(component, () => {
-      this.client.sync(loguxUnsubscribe({ channel })).then(() => {
-        console.log('unsubscribed');
-      });
+  unsubscribeChannel(channel: string) {
+    this.client.sync(loguxUnsubscribe({ channel })).then(() => {
+      console.log('unsubscribed');
     });
-
-    return new Channel(channel, component);
   }
 
   sync(type: string, payload?: unknown) {

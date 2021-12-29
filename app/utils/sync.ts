@@ -4,12 +4,12 @@ import {
   setValue,
   TrackedStorage,
 } from 'ember-tracked-storage-polyfill';
-import Core from '../services/core';
+import { Channel } from '../services/core';
 interface Options {
   defaultValue?: unknown;
   key?: string;
 }
-type Context = { core: Core } & Record<string, unknown>;
+type Context = { channel: Channel } & Record<string, unknown>;
 type Action = { type: string } & Record<string, unknown>;
 
 export function sync(action: string, { defaultValue, key }: Options = {}): any {
@@ -19,10 +19,10 @@ export function sync(action: string, { defaultValue, key }: Options = {}): any {
       set(this: Context, value: unknown) {
         setValue(this[storageKey] as TrackedStorage<unknown>, value);
       },
-      get(this: { core: Core } & Record<string, unknown>) {
+      get(this: Context) {
         if (!this[storageKey]) {
           this[storageKey] = createStorage(defaultValue);
-          this.core.client.type(action, (action: Action, _meta: unknown) => {
+          this.channel.type(action, (action: Action) => {
             this[name] = action[key ? key : 'payload'];
           });
         }
