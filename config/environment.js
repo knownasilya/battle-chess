@@ -3,6 +3,7 @@
 module.exports = function (environment) {
   let ENV = {
     modulePrefix: 'bchess',
+    podModulePrefix: 'bchess/pods',
     environment,
     rootURL: '/',
     locationType: 'auto',

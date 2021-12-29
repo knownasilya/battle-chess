@@ -5,6 +5,19 @@ const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 module.exports = function (defaults) {
   let app = new EmberApp(defaults, {
     // Add options here
+    autoImport: {
+      webpack: {
+        module: {
+          rules: [
+            {
+              test: /\.svg$/,
+              type: 'asset',
+              use: 'svgo-loader',
+            },
+          ],
+        },
+      },
+    },
   });
 
   // Use `app.import` to add additional libraries to the generated
