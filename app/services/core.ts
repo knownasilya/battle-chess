@@ -36,6 +36,14 @@ export default class Core extends Service {
       });
     }
   }
+
+  sync(type: string, payload?: unknown) {
+    this.client.sync({ type, payload });
+  }
+
+  local(type: string, payload?: unknown) {
+    this.client.log.add({ type, payload }, { tab: this.client.clientId });
+  }
 }
 
 // DO NOT DELETE: this is how TypeScript knows how to look up your services.

@@ -23,7 +23,7 @@ export function sync(action: string, { defaultValue, key }: Options = {}): any {
         if (!this[storageKey]) {
           this[storageKey] = createStorage(defaultValue);
           this.core.client.type(action, (action: Action, _meta: unknown) => {
-            this[name] = action[key ? key : 'value'];
+            this[name] = action[key ? key : 'payload'];
           });
         }
 

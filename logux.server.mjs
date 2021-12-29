@@ -24,11 +24,11 @@ server.channel('counter', {
   async load(ctx) {
     // Load initial state when client subscribing to the channel.
     // You can use any database.
-    return { type: 'INC', value: count };
+    return { type: 'counter/INC', payload: count };
   },
 });
 
-server.type('INC', {
+server.type('counter/INC', {
   access() {
     return true;
   },
