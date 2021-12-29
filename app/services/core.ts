@@ -3,6 +3,30 @@ import { registerDestructor } from '@ember/destroyable';
 import { CrossTabClient, badge, badgeEn, log } from '@logux/client';
 import { badgeStyles } from '@logux/client/badge/styles';
 import { loguxSubscribe, loguxUnsubscribe } from '@logux/actions';
+import Component from '@glimmer/component';
+import { getOwner } from '@ember/application';
+
+export class Channel {
+  name: string;
+  instance: Component;
+
+  constructor(name: string, instance: Component) {
+    this.name = name;
+    this.instance = instance;
+  }
+
+  get core(): Core {
+    return getOwner(this.instance).lookup('service:core');
+  }
+
+  sync(type: string, payload?: unknown) {
+    this.core.sync(`${this.name}/${type}`, payload);
+  }
+
+  local(type: string, payload?: unknown) {
+    this.core.local(`${this.name}/${type}`, payload);
+  }
+}
 
 export default class Core extends Service {
   declare client: CrossTabClient;
@@ -23,18 +47,18 @@ export default class Core extends Service {
     this.client = client;
   }
 
-  subscribeChannel(channel: string, component?: object) {
+  subscribeChannel(channel: string, component: Component) {
     this.client.sync(loguxSubscribe({ channel })).then(() => {
       console.log('subscribed');
     });
 
-    if (component) {
-      registerDestructor(component, () => {
-        this.client.sync(loguxUnsubscribe({ channel })).then(() => {
-          console.log('unsubscribed');
-        });
+    registerDestructor(component, () => {
+      this.client.sync(loguxUnsubscribe({ channel })).then(() => {
+        console.log('unsubscribed');
       });
-    }
+    });
+
+    return new Channel(channel, component);
   }
 
   sync(type: string, payload?: unknown) {

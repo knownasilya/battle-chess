@@ -1,6 +1,6 @@
 import { inject as service } from '@ember/service';
 import Component from '@glimmer/component';
-import Core from 'bchess/services/core';
+import Core, { Channel } from 'bchess/services/core';
 import { sync } from 'bchess/utils/sync';
 
 export default class Counter extends Component {
@@ -9,13 +9,14 @@ export default class Counter extends Component {
   @sync('counter/INC', { defaultValue: 0 })
   declare counter: number;
 
+  channel: Channel;
+
   constructor(owner: object, args: object) {
     super(owner, args);
 
-    this.core.subscribeChannel('counter', this);
+    this.channel = this.core.subscribeChannel('counter', this);
   }
 
-  increase = () => this.core.sync('counter/INC', this.counter + 1);
-
-  increaseLocal = () => this.core.local('counter/INC', this.counter + 1);
+  increase = () => this.channel.sync('INC', this.counter + 1);
+  increaseLocal = () => this.channel.local('INC', this.counter + 1);
 }
