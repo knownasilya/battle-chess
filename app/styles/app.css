@@ -1,0 +1,21 @@
+.board {
+  cursor: default;
+  height: 560px;
+  width: 560px;
+  border: 2px solid sandybrown;
+  border-radius: 8px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: nowrap;
+  width: 560px;
+}
+
+.square {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: calc(560px / 8);
+  height: calc(560px / 8);
+}

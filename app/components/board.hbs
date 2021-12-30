@@ -1,0 +1,9 @@
+<div class='board'>
+  {{#each this.emptyList as |rowItem row|}}
+    <div class='row'>
+      {{#each this.emptyList as |colItem col|}}
+        <Square @c={{col}} @r={{row}} @orientation={{@orientation}} />
+      {{/each}}
+    </div>
+  {{/each}}
+</div>

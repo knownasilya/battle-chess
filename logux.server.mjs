@@ -16,6 +16,7 @@ server.auth(({ userId, token }) => {
 
 let count = 0;
 let rooms = [];
+let roomAccess = {};
 
 server.channel('counter', {
   access() {
@@ -78,6 +79,21 @@ server.type('foyer/ADD_ROOM', {
   async process(ctx, action) {
     rooms.push(action.payload);
     ctx.sendBack({ type: 'foyer/LIST_ROOMS', payload: rooms });
+  },
+});
+
+server.channel('room/:name', {
+  access() {
+    return true;
+  },
+  async load(ctx) {
+    if (!roomAccess[ctx.params.name]) {
+      roomAccess[ctx.params.name] = [];
+    }
+    roomAccess[ctx.params.name].push(ctx.userId);
+    // Load initial state when client subscribing to the channel.
+    // You can use any database.
+    return { type: 'room/GET_DETAILS', payload: { name: ctx.params.name } };
   },
 });
 
