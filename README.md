@@ -1,5 +1,6 @@
 # battle-chess
 
+Alternate take on chess.
 Run `yarn logux` and `yarn start`
 
 ## Prerequisites
