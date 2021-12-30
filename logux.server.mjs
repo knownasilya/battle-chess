@@ -94,7 +94,10 @@ server.channel('room/:name', {
     roomAccess[ctx.params.name].push(ctx.userId);
     // Load initial state when client subscribing to the channel.
     // You can use any database.
-    return { type: 'room/END_MOVE', payload: lastFen };
+    return {
+      type: `room/END_MOVE`,
+      payload: { roomId: ctx.params.name, fen: lastFen },
+    };
   },
 });
 

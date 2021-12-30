@@ -3,7 +3,6 @@ import { action } from '@ember/object';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { Channel } from 'bchess/services/core';
-import { type } from 'bchess/utils/sync';
 import * as Chess from 'chess.js';
 import { useResource } from 'ember-resources';
 
@@ -49,7 +48,6 @@ export default class Board extends Component<BoardArgs> {
     // Make move if selecting a valid square
     if (this.selectedSquare && this.highlightedSquares?.includes(square)) {
       this.chess.move({ from: this.selectedSquare, to: square });
-      this.updateBoard();
       this.channel.globalSync('room/END_MOVE', {
         roomId: this.args.roomId,
         fen: this.chess.fen(),
@@ -70,6 +68,7 @@ export default class Board extends Component<BoardArgs> {
   updateAfterMove(fen: string) {
     if (!fen) {
       this.chess.reset();
+      this.updateBoard();
       return;
     }
 
