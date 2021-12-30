@@ -9,6 +9,8 @@
 {{/if}}
 
 <form {{on 'submit' this.addRoom}}>
-  <input name='name' placeholder='room name' />
+  <label for='add-room-name'>Room Name</label>
+  <input name='name' id='add-room-name' placeholder='my-room' />
+
   <button type='submit'>Add Room</button>
 </form>

@@ -13,6 +13,7 @@ export default class Foyer extends Component {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
+
     this.channel.sync('ADD_ROOM', formData.get('name'));
     form.reset();
   };
