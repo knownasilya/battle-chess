@@ -1,7 +1,7 @@
 {{#if this.rooms}}
   <ul>
     {{#each this.rooms as |room|}}
-      <li>{{room}}</li>
+      <li><LinkTo @to='room' @model={{room}}>{{room}}</LinkTo></li>
     {{/each}}
   </ul>
 {{else}}
