@@ -7,6 +7,7 @@ interface SquareArgs {
   r: number;
   orientation: 'black' | 'white';
   selectedSquare?: string;
+  highlightedSquares?: string[];
 }
 
 export default class Square extends Component<SquareArgs> {
@@ -27,5 +28,9 @@ export default class Square extends Component<SquareArgs> {
 
   get isSelected() {
     return this.args.selectedSquare === this.square;
+  }
+
+  get isHighlighted() {
+    return this.args.highlightedSquares?.includes(this.square);
   }
 }

@@ -7,6 +7,7 @@ import * as Chess from 'chess.js';
 export default class Board extends Component {
   @tracked selectedSquare?: string = undefined;
   @tracked hoveredSquare?: string = undefined;
+  @tracked highlightedSquares?: string[] = undefined;
 
   emptyList = [...Array(8)];
 
@@ -26,10 +27,21 @@ export default class Board extends Component {
 
   @action
   selectSquare(piece: Chess.Piece | null, square: string) {
-    this.selectedSquare = square;
+    if (this.selectedSquare === square) {
+      this.selectedSquare = undefined;
+      this.highlightedSquares = undefined;
+    } else {
+      this.selectedSquare = square;
 
-    if (piece) {
-      console.log(getLegalMovesForPiece(this.chess, piece, square));
+      if (piece) {
+        this.highlightedSquares = getLegalMovesForPiece(
+          this.chess,
+          piece,
+          square
+        );
+      } else {
+        this.highlightedSquares = undefined;
+      }
     }
   }
 }
@@ -48,5 +60,5 @@ const getLegalMovesForPiece = (
         move.color === piece.color
       );
     })
-    .map((move) => move.san);
+    .map((move) => move.to);
 };

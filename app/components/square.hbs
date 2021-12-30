@@ -7,4 +7,8 @@
   {{on 'mouseleave' @onHoverOut}}
 >
   {{yield (hash square=this.square color=this.color)}}
+
+  {{#if this.isHighlighted}}
+    <div class='highlighted'></div>
+  {{/if}}
 </button>
