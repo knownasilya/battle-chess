@@ -2,20 +2,24 @@
   {{#each this.emptyList as |rowItem row|}}
     <div class='row'>
       {{#each this.emptyList as |colItem col|}}
-        <Square
-          @c={{col}}
-          @r={{row}}
-          @orientation={{@orientation}}
-          @selectedSquare={{this.selectedSquare}}
-          @select={{fn (mut this.selectedSquare)}}
-        >
-          {{#let (this.getPiece row col) as |piece|}}
+        {{#let (this.getPiece row col) as |piece|}}
+          <Square
+            @c={{col}}
+            @r={{row}}
+            @orientation={{@orientation}}
+            @selectedSquare={{this.selectedSquare}}
+            @select={{fn this.selectSquare piece}}
+            @onHover={{fn (mut this.hoveredSquare)}}
+            @onHoverOut={{fn (mut this.hoveredSquare) null}}
+          >
             {{#if piece}}
               <Piece @type={{get piece 'type'}} @color={{get piece 'color'}} />
             {{/if}}
-          {{/let}}
-        </Square>
+          </Square>
+        {{/let}}
       {{/each}}
     </div>
   {{/each}}
 </div>
+
+<p>{{this.hoveredSquare}}</p>

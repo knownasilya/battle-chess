@@ -3,6 +3,8 @@
   type='button'
   {{style backgroundColor=this.bgColor}}
   {{on 'click' (fn @select this.square)}}
+  {{on 'mouseover' (fn @onHover this.square)}}
+  {{on 'mouseleave' @onHoverOut}}
 >
   {{yield (hash square=this.square color=this.color)}}
 </button>
