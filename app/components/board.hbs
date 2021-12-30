@@ -8,7 +8,6 @@
           @orientation={{@orientation}}
           @selectedSquare={{this.selectedSquare}}
           @select={{fn (mut this.selectedSquare)}}
-          as |sq|
         >
           {{#let (this.getPiece row col) as |piece|}}
             {{#if piece}}

@@ -9,7 +9,7 @@ const server = new Server(
   })
 );
 
-server.auth(({ userId, token }) => {
+server.auth(() => {
   // Allow only local users until we will have a proper authentication
   return env === 'development';
 });
@@ -23,7 +23,7 @@ server.channel('counter', {
     // Access control is mandatory
     return true;
   },
-  async load(ctx) {
+  async load() {
     // Load initial state when client subscribing to the channel.
     // You can use any database.
     return { type: 'counter/INC', payload: count };
@@ -49,7 +49,7 @@ server.channel('foyer', {
     return true;
   },
 
-  async load(ctx) {
+  async load() {
     // Load initial state when client subscribing to the channel.
     // You can use any database.
     return { type: 'foyer/LIST_ROOMS', payload: rooms };
