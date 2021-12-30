@@ -5,6 +5,7 @@ const server = new Server(
   Server.loadOptions(process, {
     subprotocol: '1.0.0',
     supports: '1.x',
+    // @ts-expect-error known
     fileUrl: import.meta.url,
   })
 );
@@ -15,8 +16,14 @@ server.auth(() => {
 });
 
 let count = 0;
-let rooms = [];
-let roomAccess = {};
+const rooms: string[] = [];
+const roomAccess: {
+  [K in string]: {
+    users: string[];
+    turn: string;
+    fen?: string;
+  };
+} = {};
 let lastFen = undefined;
 
 server.channel('counter', {
@@ -83,20 +90,22 @@ server.type('foyer/ADD_ROOM', {
   },
 });
 
-server.channel('room/:name', {
+server.channel<{ id: string }>('room/:id', {
   access() {
     return true;
   },
   async load(ctx) {
-    if (!roomAccess[ctx.params.name]) {
-      roomAccess[ctx.params.name] = [];
+    const id = ctx.params.id;
+
+    if (!roomAccess[id]) {
+      roomAccess[id] = { users: [], turn: ctx.userId, fen: undefined };
     }
-    roomAccess[ctx.params.name].push(ctx.userId);
-    // Load initial state when client subscribing to the channel.
-    // You can use any database.
+
+    roomAccess[id].users.push(ctx.userId);
+
     return {
       type: `room/END_MOVE`,
-      payload: { roomId: ctx.params.name, fen: lastFen },
+      payload: { roomId: id, fen: roomAccess[id].fen },
     };
   },
 });
@@ -109,9 +118,11 @@ server.type('room/END_MOVE', {
     return `room/${action.payload.roomId}`;
   },
   async process(ctx, action) {
-    console.log(action);
-    // noop
-    lastFen = action.payload.fen;
+    const room = roomAccess[action.payload.roomId];
+
+    if (room) {
+      room.fen = action.payload.fen;
+    }
   },
 });
 

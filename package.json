@@ -21,7 +21,7 @@
     "start": "ember serve",
     "test": "npm-run-all lint test:*",
     "test:ember": "ember test",
-    "logux": "node logux.server.mjs"
+    "logux": "tsm logux.server.ts"
   },
   "volta": {
     "node": "16.13.0",
@@ -29,7 +29,8 @@
   },
   "dependencies": {
     "@logux/server": "^0.10.8",
-    "nanostores": "^0.5.8"
+    "nanostores": "^0.5.8",
+    "tsm": "^2.2.1"
   },
   "devDependencies": {
     "@ember/optional-features": "^2.0.0",
