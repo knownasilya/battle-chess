@@ -1,3 +1,4 @@
+import Component from '@glimmer/component';
 import {
   createStorage,
   getValue,
@@ -9,8 +10,9 @@ interface Options {
   defaultValue?: unknown;
   key?: string;
   channelKey?: string;
+  global?: boolean;
 }
-type Context = { channel: Channel } & Record<string, unknown>;
+type Context = { channel: Channel } & Component & Record<string, unknown>;
 type Action = { type: string } & Record<string, unknown>;
 
 export function sync(
@@ -35,6 +37,37 @@ export function sync(
         }
 
         return getValue(this[storageKey] as TrackedStorage<unknown>);
+      },
+    };
+  };
+}
+
+export function type<T = any>(
+  action: string,
+  { key, channelKey, global }: Options = {}
+): any {
+  return function (target: T & Context, name: string) {
+    return {
+      get(this: T & Context) {
+        if (global) {
+          (this[channelKey || 'channel'] as Channel).globalType(
+            action,
+            (action: Action) => {
+              const payload = action[key ? key : 'payload'];
+              (this[name] as (payload: unknown) => void)(payload);
+            }
+          );
+        } else {
+          (this[channelKey || 'channel'] as Channel).type(
+            action,
+            (action: Action) => {
+              const payload = action[key ? key : 'payload'];
+              (this[name] as (payload: unknown) => void)(payload);
+            }
+          );
+        }
+
+        return this[name];
       },
     };
   };

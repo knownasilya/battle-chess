@@ -17,6 +17,7 @@ server.auth(() => {
 let count = 0;
 let rooms = [];
 let roomAccess = {};
+let lastFen = undefined;
 
 server.channel('counter', {
   access() {
@@ -93,7 +94,21 @@ server.channel('room/:name', {
     roomAccess[ctx.params.name].push(ctx.userId);
     // Load initial state when client subscribing to the channel.
     // You can use any database.
-    return { type: 'room/GET_DETAILS', payload: { name: ctx.params.name } };
+    return { type: 'room/END_MOVE', payload: lastFen };
+  },
+});
+
+server.type('room/END_MOVE', {
+  access() {
+    return true;
+  },
+  resend(ctx, action) {
+    return `room/${action.payload.roomId}`;
+  },
+  async process(ctx, action) {
+    console.log(action);
+    // noop
+    lastFen = action.payload.fen;
   },
 });
 

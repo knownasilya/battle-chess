@@ -43,6 +43,10 @@ export class Channel extends Resource {
     this.core.sync(`${this.channel}/${type}`, payload);
   }
 
+  globalSync(type: string, payload?: unknown) {
+    this.core.sync(type, payload);
+  }
+
   local(type: string, payload?: unknown) {
     this.core.local(`${this.channel}/${type}`, payload);
   }
@@ -52,6 +56,13 @@ export class Channel extends Resource {
     listener: ClientActionListener<{ type: string; payload?: unknown }>
   ) {
     this.core.client.type(`${this.channel}/${type}`, listener);
+  }
+
+  globalType(
+    type: string,
+    listener: ClientActionListener<{ type: string; payload?: unknown }>
+  ) {
+    this.core.client.type(type, listener);
   }
 
   syncType = helper(
