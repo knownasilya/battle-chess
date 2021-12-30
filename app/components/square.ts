@@ -6,23 +6,26 @@ interface SquareArgs {
   c: number;
   r: number;
   orientation: 'black' | 'white';
+  selectedSquare?: string;
 }
 
 export default class Square extends Component<SquareArgs> {
   get square() {
-    const square =
-      this.args.orientation === 'black'
-        ? COLUMNS[7 - this.args.c] + (this.args.r + 1)
-        : COLUMNS[this.args.c] + (8 - this.args.r);
-    return square;
+    if (this.args.orientation === 'black') {
+      return COLUMNS[7 - this.args.c] + (this.args.r + 1);
+    }
+    return COLUMNS[this.args.c] + (8 - this.args.r);
   }
 
   get color() {
-    const color = this.args.c % 2 === this.args.r % 2 ? 'white' : 'black';
-    return color;
+    return this.args.c % 2 === this.args.r % 2 ? 'white' : 'black';
   }
 
   get bgColor() {
-    return this.color === 'black' ? 'tan' : 'lighttan';
+    return this.color === 'black' ? 'tan' : 'white';
+  }
+
+  get isSelected() {
+    return this.args.selectedSquare === this.square;
   }
 }

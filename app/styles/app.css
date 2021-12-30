@@ -13,9 +13,15 @@
 }
 
 .square {
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center;
   width: calc(560px / 8);
   height: calc(560px / 8);
+  border: 0;
+}
+
+.square.selected {
+  border: 2px solid cyan;
 }

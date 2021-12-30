@@ -1,3 +1,7 @@
-<div class='square' {{style backgroundColor=this.bgColor}}>
+<button
+  class='square {{if this.isSelected "selected"}}'
+  {{style backgroundColor=this.bgColor}}
+  {{on 'click' (fn @select this.square)}}
+>
   {{this.square}}
-</div>
+</button>
