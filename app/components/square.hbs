@@ -1,7 +1,8 @@
 <button
   class='square {{if this.isSelected "selected"}}'
+  type='button'
   {{style backgroundColor=this.bgColor}}
   {{on 'click' (fn @select this.square)}}
 >
-  {{this.square}}
+  {{yield (hash square=this.square color=this.color)}}
 </button>

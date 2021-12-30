@@ -1613,6 +1613,11 @@
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.3.0.tgz#23509ebc1fa32f1b4d50d6a66c4032d5b8eaabdc"
   integrity sha512-/ceqdqeRraGolFTcfoXNiqjyQhZzbINDngeoAq9GoHa8PPK1yNzTaxWjA6BFWp5Ua9JpXEMSS4s5i9tS0hOJtw==
 
+"@types/chess.js@^0.11.2":
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/@types/chess.js/-/chess.js-0.11.2.tgz#e5d5f502b38f24efe854572ee33a939e1e395005"
+  integrity sha512-ZgT0f5Dm1x+kjA/RhCQpBM2NoUGkdk9JFdwncW7/GdqzHCOkLsOTq4k/EKRiRTCFLXR4fTKk8j7KNOmzzHQVgg==
+
 "@types/component-emitter@^1.2.10":
   version "1.2.11"
   resolved "https://registry.yarnpkg.com/@types/component-emitter/-/component-emitter-1.2.11.tgz#50d47d42b347253817a39709fef03ce66a108506"
@@ -3985,6 +3990,11 @@ charm@^1.0.0:
   dependencies:
     inherits "^2.0.1"
 
+chess.js@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/chess.js/-/chess.js-0.12.0.tgz#ffca1773b93a4aa044891de81286e264ca229b00"
+  integrity sha512-eF1xf4j88r/AwIRxqV1FXZbVgMt4yUx05xrL+ZMqUrY+snFrUxGVHs0VgEd3AvngujDE9th7XZqqCwEKEQ7mWQ==
+
 chokidar@^2.1.8:
   version "2.1.8"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-2.1.8.tgz#804b3a7b6a99358c3c5c61e71d8728f041cff917"
@@ -5582,6 +5592,13 @@ ember-tracked-storage-polyfill@^1.0.0:
   dependencies:
     ember-cli-babel "^7.26.3"
     ember-cli-htmlbars "^5.7.1"
+
+ember-truth-helpers@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/ember-truth-helpers/-/ember-truth-helpers-3.0.0.tgz#86766bdca4ac9b86bce3d262dff2aabc4a0ea384"
+  integrity sha512-hPKG9QqruAELh0li5xaiLZtr88ioWYxWCXisAWHWE0qCP4a2hgtuMzKUPpiTCkltvKjuqpzTZCU4VhQ+IlRmew==
+  dependencies:
+    ember-cli-babel "^7.22.1"
 
 ember-welcome-page@^6.0.0:
   version "6.0.0"
