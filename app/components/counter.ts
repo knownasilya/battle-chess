@@ -6,7 +6,7 @@ import { useResource } from 'ember-resources';
 export default class Counter extends Component {
   channel = useResource(this, Channel, () => ['counter']);
 
-  @sync('INC', { defaultValue: 0 })
+  @sync('counter/INC', { defaultValue: 0 })
   declare counter: number;
 
   increase = () => this.channel.sync('INC', this.counter + 1);

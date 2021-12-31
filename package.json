@@ -21,7 +21,7 @@
     "start": "ember serve",
     "test": "npm-run-all lint test:*",
     "test:ember": "ember test",
-    "logux": "tsm logux.server.ts"
+    "logux": "tsm lib/app.ts"
   },
   "volta": {
     "node": "16.13.0",

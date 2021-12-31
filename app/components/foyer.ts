@@ -6,7 +6,7 @@ import { useResource } from 'ember-resources';
 export default class Foyer extends Component {
   channel = useResource(this, Channel, () => ['foyer']);
 
-  @sync('LIST_ROOMS', { defaultValue: ['test'] })
+  @sync('foyer/LIST_ROOMS', { defaultValue: ['test'] })
   declare rooms: string[];
 
   addRoom = (e: SubmitEvent) => {

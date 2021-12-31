@@ -3,6 +3,7 @@ import { action } from '@ember/object';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { Channel } from 'bchess/services/core';
+import { sync } from 'bchess/utils/sync';
 import * as Chess from 'chess.js';
 import { useResource } from 'ember-resources';
 
@@ -31,10 +32,14 @@ export default class Board extends Component<BoardArgs> {
     // @ts-expect-error known
     this.chess = new Chess();
     this.board = this.chess.board();
+
     this.channel.globalType('room/END_MOVE', (action) =>
       this.updateAfterMove((action.payload as { fen: string }).fen)
     );
   }
+
+  @sync('room/ENTERED')
+  declare roomDetails: { users: string[]; fen?: string; turn?: string };
 
   getPiece = helper(([row, col]: [row: number, col: number]) => {
     const board = this.board;

@@ -101,12 +101,27 @@ server.channel<{ id: string }>('room/:id', {
       roomAccess[id] = { users: [], turn: ctx.userId, fen: undefined };
     }
 
-    roomAccess[id].users.push(ctx.userId);
+    if (!roomAccess[id].users.includes(ctx.userId)) {
+      roomAccess[id].users.push(ctx.userId);
+    }
 
     return {
-      type: `room/END_MOVE`,
-      payload: { roomId: id, fen: roomAccess[id].fen },
+      type: `room/ENTERED`,
+      payload: { ...roomAccess[id] },
     };
+  },
+});
+
+server.type('room/ENTERED', {
+  access() {
+    return true;
+  },
+  resend(ctx, action) {
+    return `room`;
+  },
+  async process(ctx, action) {
+    // noop
+    // test
   },
 });
 
