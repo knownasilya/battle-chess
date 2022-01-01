@@ -19,12 +19,12 @@ let count = 0;
 const rooms: string[] = [];
 const roomAccess: {
   [K in string]: {
-    users: string[];
-    turn: string;
+    light: string;
+    dark: string;
+    turn: 'light' | 'dark';
     fen?: string;
   };
 } = {};
-let lastFen = undefined;
 
 server.channel('counter', {
   access() {
@@ -98,11 +98,18 @@ server.channel<{ id: string }>('room/:id', {
     const id = ctx.params.id;
 
     if (!roomAccess[id]) {
-      roomAccess[id] = { users: [], turn: ctx.userId, fen: undefined };
+      roomAccess[id] = {
+        light: undefined,
+        dark: undefined,
+        turn: 'light',
+        fen: undefined,
+      };
     }
 
-    if (!roomAccess[id].users.includes(ctx.userId)) {
-      roomAccess[id].users.push(ctx.userId);
+    if (!roomAccess[id].light) {
+      roomAccess[id].light = ctx.userId;
+    } else if (!roomAccess[id].dark) {
+      roomAccess[id].dark = ctx.userId;
     }
 
     return {
@@ -125,20 +132,44 @@ server.type('room/ENTERED', {
   },
 });
 
-server.type('room/END_MOVE', {
-  access() {
-    return true;
-  },
-  resend(ctx, action) {
-    return `room/${action.payload.roomId}`;
-  },
-  async process(ctx, action) {
-    const room = roomAccess[action.payload.roomId];
+server.type<{ type: string; payload: { fen: string; roomId: string } }>(
+  'room/MOVE_PIECE',
+  {
+    access(ctx, action) {
+      const room = roomAccess[action.payload.roomId];
+      console.log(room);
+      if (!room) {
+        return false;
+      }
 
-    if (room) {
-      room.fen = action.payload.fen;
-    }
-  },
-});
+      const isDark = room.dark === ctx.userId;
+      const isLight = room.light === ctx.userId;
+      const isPlayer = isLight || isDark;
+
+      console.log({ isDark, isLight, isPlayer });
+
+      if (!isPlayer) {
+        return false;
+      }
+
+      return (
+        (room.turn === 'light' && isLight) || (room.turn === 'dark' && isDark)
+      );
+    },
+    resend(ctx, action) {
+      return `room/${action.payload.roomId}`;
+    },
+    async process(ctx, action) {
+      const room = roomAccess[action.payload.roomId];
+
+      if (room) {
+        room.fen = action.payload.fen;
+        room.turn = room.turn === 'light' ? 'dark' : 'light';
+      }
+
+      ctx.sendBack({ type: 'room/ENTERED', payload: room });
+    },
+  }
+);
 
 server.listen();

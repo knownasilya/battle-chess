@@ -1,6 +1,9 @@
 <h2>{{@model.id}}</h2>
 {{page-title 'Room: ' @model.id}}
 
-<Board @orientation='white' @roomId={{@model.id}} />
+<div class='p-4 grid grid-cols-2'>
+  <Board @orientation='white' @roomId={{@model.id}} />
+  <div>test</div>
+</div>
 
 {{outlet}}

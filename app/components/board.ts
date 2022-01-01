@@ -2,14 +2,21 @@ import { helper } from '@ember/component/helper';
 import { action } from '@ember/object';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { loguxUndo } from '@logux/actions';
 import { Channel } from 'bchess/services/core';
-import { sync } from 'bchess/utils/sync';
 import * as Chess from 'chess.js';
 import { useResource } from 'ember-resources';
 
 interface BoardArgs {
   roomId: string;
   orientation: 'black' | 'white';
+}
+
+interface RoomDetails {
+  dark: string;
+  light: string;
+  fen?: string;
+  turn: 'light' | 'dark';
 }
 
 export default class Board extends Component<BoardArgs> {
@@ -22,6 +29,7 @@ export default class Board extends Component<BoardArgs> {
     type: Chess.PieceType;
     color: 'b' | 'w';
   } | null)[][];
+  @tracked roomDetails?: RoomDetails = undefined;
 
   emptyList = [...Array(8)];
 
@@ -33,13 +41,26 @@ export default class Board extends Component<BoardArgs> {
     this.chess = new Chess();
     this.board = this.chess.board();
 
-    this.channel.globalType('room/END_MOVE', (action) =>
+    this.channel.globalType('room/MOVE_PIECE', (action) =>
       this.updateAfterMove((action.payload as { fen: string }).fen)
     );
-  }
+    this.channel.globalType<RoomDetails>('room/ENTERED', (action) => {
+      const fen = action.payload.fen;
 
-  @sync('room/ENTERED')
-  declare roomDetails: { users: string[]; fen?: string; turn?: string };
+      if (fen) {
+        this.chess.load(fen);
+        this.updateBoard();
+      }
+
+      this.roomDetails = action.payload;
+    });
+    this.channel.globalType('logux/undo', (action) => {
+      if ((action as any).action.type === 'room/MOVE_PIECE') {
+        this.chess.undo();
+        this.updateBoard();
+      }
+    });
+  }
 
   getPiece = helper(([row, col]: [row: number, col: number]) => {
     const board = this.board;
@@ -53,7 +74,7 @@ export default class Board extends Component<BoardArgs> {
     // Make move if selecting a valid square
     if (this.selectedSquare && this.highlightedSquares?.includes(square)) {
       this.chess.move({ from: this.selectedSquare, to: square });
-      this.channel.globalSync('room/END_MOVE', {
+      this.channel.globalSync('room/MOVE_PIECE', {
         roomId: this.args.roomId,
         fen: this.chess.fen(),
       });
@@ -93,14 +114,5 @@ const getLegalMovesForPiece = (
 ) => {
   if (!piece) return [];
 
-  return game
-    .moves({ verbose: true })
-    .filter((move) => {
-      return (
-        move.from === square &&
-        move.piece === piece.type &&
-        move.color === piece.color
-      );
-    })
-    .map((move) => move.to);
+  return game.moves({ square, verbose: true }).map((move) => move.to);
 };

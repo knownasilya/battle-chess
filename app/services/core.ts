@@ -8,6 +8,7 @@ import { getOwner } from '@ember/application';
 import { ArgsWrapper, Resource } from 'ember-resources';
 import { helper } from '@ember/component/helper';
 import { ClientActionListener } from '@logux/client/client';
+import { Action } from '@logux/server';
 
 export class Channel extends Resource {
   owner: any;
@@ -58,11 +59,11 @@ export class Channel extends Resource {
     this.core.client.type(`${this.channel}/${type}`, listener);
   }
 
-  globalType(
+  globalType<T>(
     type: string,
-    listener: ClientActionListener<{ type: string; payload?: unknown }>
+    listener: ClientActionListener<{ type: string; payload: T }>
   ) {
-    this.core.client.type(type, listener);
+    this.core.client.type<{ type: string; payload: T }>(type, listener);
   }
 
   syncType = helper(

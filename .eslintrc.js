@@ -33,7 +33,7 @@ module.exports = {
         './config/**/*.js',
         // './lib/*/index.js',
         './server/**/*.js',
-        './logux.server.mjs',
+        './tailwind.config.js',
       ],
       parserOptions: {
         sourceType: 'script',

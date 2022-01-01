@@ -1,27 +1,36 @@
-<div class='board'>
+<div
+  class='cursor-default grid border-2 border-orange-400 rounded grid-cols-8 grid-rows-8 aspect-square'
+>
   {{#each this.emptyList as |rowItem row|}}
-    <div class='row'>
-      {{#each this.emptyList as |colItem col|}}
-        {{#let (this.getPiece row col) as |piece|}}
-          <Square
-            @c={{col}}
-            @r={{row}}
-            @highlightedSquares={{this.highlightedSquares}}
-            @orientation={{@orientation}}
-            @selectedSquare={{this.selectedSquare}}
-            @select={{fn this.selectSquare piece}}
-            @onHover={{fn (mut this.hoveredSquare)}}
-            @onHoverOut={{fn (mut this.hoveredSquare) null}}
-          >
-            {{#if piece}}
-              <Piece @type={{get piece 'type'}} @color={{get piece 'color'}} />
-            {{/if}}
-          </Square>
-        {{/let}}
-      {{/each}}
-    </div>
+    {{#each this.emptyList as |colItem col|}}
+      {{#let (this.getPiece row col) as |piece|}}
+        <Square
+          @c={{col}}
+          @r={{row}}
+          @highlightedSquares={{this.highlightedSquares}}
+          @orientation={{@orientation}}
+          @selectedSquare={{this.selectedSquare}}
+          @select={{fn this.selectSquare piece}}
+          @onHover={{fn (mut this.hoveredSquare)}}
+          @onHoverOut={{fn (mut this.hoveredSquare) null}}
+        >
+          {{#if piece}}
+            <Piece @type={{get piece 'type'}} @color={{get piece 'color'}} />
+          {{/if}}
+        </Square>
+      {{/let}}
+    {{/each}}
   {{/each}}
 </div>
 
 <p>{{this.hoveredSquare}}</p>
-<p>Details: {{this.roomDetails.users.length}}</p>
+<dl>
+  <div class='{{if (eq this.roomDetails.turn "light") "current-turn"}}'>
+    <dt>Light</dt>
+    <dd>{{this.roomDetails.light}}</dd>
+  </div>
+  <div class='{{if (eq this.roomDetails.turn "dark") "current-turn"}}'>
+    <dt>Dark</dt>
+    <dd>{{this.roomDetails.dark}}</dd>
+  </div>
+</dl>
