@@ -2,7 +2,6 @@ import { helper } from '@ember/component/helper';
 import { action } from '@ember/object';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { loguxUndo } from '@logux/actions';
 import { Channel } from 'bchess/services/core';
 import * as Chess from 'chess.js';
 import { useResource } from 'ember-resources';
@@ -68,6 +67,10 @@ export default class Board extends Component<BoardArgs> {
 
     return piece;
   });
+
+  get me() {
+    return window.location.search;
+  }
 
   @action
   selectSquare(piece: Chess.Piece | null, square: Chess.Square) {

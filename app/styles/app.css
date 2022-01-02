@@ -1,17 +1,2 @@
-.board {
-  cursor: default;
-  height: 560px;
-  width: 560px;
-  border: 2px solid sandybrown;
-  border-radius: 8px;
-}
 
-.row {
-  display: flex;
-  flex-wrap: nowrap;
-  width: 560px;
-}
 
-.current-turn {
-  border: 1px solid forestgreen;
-}

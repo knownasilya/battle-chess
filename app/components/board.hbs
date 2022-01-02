@@ -23,14 +23,49 @@
   {{/each}}
 </div>
 
-<p>{{this.hoveredSquare}}</p>
-<dl>
-  <div class='{{if (eq this.roomDetails.turn "light") "current-turn"}}'>
-    <dt>Light</dt>
-    <dd>{{this.roomDetails.light}}</dd>
-  </div>
-  <div class='{{if (eq this.roomDetails.turn "dark") "current-turn"}}'>
-    <dt>Dark</dt>
-    <dd>{{this.roomDetails.dark}}</dd>
-  </div>
-</dl>
+<div>
+  <dl class='grid gap-2 grid-rows-2'>
+    <div
+      class='flex p-2 rounded
+        {{if (eq this.roomDetails.turn "light") "bg-green-400" "bg-gray-200"}}'
+    >
+      <dt class='flex items-center'>
+        <Piece @type='n' @color='w' />
+
+        Light
+      </dt>
+      <dd class='ml-2 flex justify-between items-center w-full'>
+        {{this.roomDetails.light}}
+
+        {{#if (eq this.me this.roomDetails.light)}}
+          <span class='rounded-lg py-1 px-2 bg-green-700 text-white'>
+            Me
+          </span>
+        {{/if}}
+      </dd>
+    </div>
+    <div
+      class='flex p-2 rounded
+        {{if (eq this.roomDetails.turn "dark") "bg-green-400" "bg-gray-200"}}'
+    >
+      <dt class='flex items-center'>
+        <Piece @type='n' @color='b' />
+
+        Dark
+      </dt>
+      <dd
+        class='ml-2 flex justify-between items-center w-full'
+      >{{this.roomDetails.dark}}
+        {{#if (eq this.me this.roomDetails.dark)}}
+          <span class='rounded-lg py-1 px-2 bg-green-700 text-white'>
+            Me
+          </span>
+        {{/if}}
+      </dd>
+    </div>
+  </dl>
+
+  <p class='mt-2 text-gray-700'>{{this.hoveredSquare}}</p>
+
+  {{yield}}
+</div>
