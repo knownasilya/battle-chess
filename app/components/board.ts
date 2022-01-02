@@ -69,7 +69,7 @@ export default class Board extends Component<BoardArgs> {
   });
 
   get me() {
-    return window.location.search;
+    return window.location.search.replace('?', '');
   }
 
   @action

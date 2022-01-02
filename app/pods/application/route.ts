@@ -6,6 +6,6 @@ export default class Application extends Route {
   @service declare core: Core;
 
   beforeModel() {
-    this.core.setup({ userId: window.location.search });
+    this.core.setup({ userId: window.location.search.replace('?', '') });
   }
 }
