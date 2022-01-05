@@ -9,7 +9,7 @@ import { Resource } from 'ember-resources';
 import { helper } from '@ember/component/helper';
 import { ClientActionListener } from '@logux/client/client';
 
-type Owner = { lookup: (value: string) => unknown };
+type Owner = { lookup: <T>(value: string) => T };
 
 export class Channel extends Resource {
   owner: Owner;
@@ -51,7 +51,7 @@ export class Channel extends Resource {
   }
 
   get core(): Core {
-    return this.owner.lookup('service:core') as Core;
+    return this.owner.lookup<Core>('service:core');
   }
 
   sync(type: string, payload?: unknown) {
