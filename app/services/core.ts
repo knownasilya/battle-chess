@@ -5,29 +5,43 @@ import { badgeStyles } from '@logux/client/badge/styles';
 import { loguxSubscribe, loguxUnsubscribe } from '@logux/actions';
 import Component from '@glimmer/component';
 import { getOwner } from '@ember/application';
-import { ArgsWrapper, Resource } from 'ember-resources';
+import { Resource } from 'ember-resources';
 import { helper } from '@ember/component/helper';
 import { ClientActionListener } from '@logux/client/client';
-import { Action } from '@logux/server';
+
+type Owner = { lookup: (value: string) => unknown };
 
 export class Channel extends Resource {
-  owner: any;
+  owner: Owner;
   channel: string;
 
   constructor(
-    owner: any,
-    args: { positional: [channel: string] },
-    previous?: any
+    owner: Owner,
+    args: { positional?: [channel: string]; named?: Record<string, unknown> },
+    previous?: {
+      args: { positional?: [channel: string]; named?: Record<string, unknown> };
+    }
   ) {
-    super(owner, args as ArgsWrapper, previous);
-    this.channel = args.positional[0];
+    super(owner, args, previous);
+    const channel = args.positional?.[0];
+
+    if (!channel) {
+      throw new Error('@channel=<string> is required');
+    }
+
+    this.channel = channel;
     this.owner = owner;
 
     if (!previous) {
       this.core.subscribeChannel(this.channel);
     } else {
+      const previousChannel = previous.args.positional?.[0];
+
       // update
-      this.core.unsubscribeChannel(previous.args.positional[0]);
+      if (previousChannel) {
+        this.core.unsubscribeChannel(previousChannel);
+      }
+
       this.core.subscribeChannel(this.channel);
     }
 
@@ -37,7 +51,7 @@ export class Channel extends Resource {
   }
 
   get core(): Core {
-    return this.owner.lookup('service:core');
+    return this.owner.lookup('service:core') as Core;
   }
 
   sync(type: string, payload?: unknown) {
