@@ -27,7 +27,7 @@
   <dl class='grid gap-2 grid-rows-2'>
     <div
       class='flex p-2 rounded
-        {{if (eq this.roomDetails.turn "light") "bg-green-400" "bg-gray-200"}}'
+        {{if (eq this.turn "w") "bg-green-400" "bg-gray-200"}}'
     >
       <dt class='flex items-center'>
         <Piece @type='n' @color='w' />
@@ -35,9 +35,9 @@
         Light
       </dt>
       <dd class='ml-2 flex justify-between items-center w-full'>
-        {{this.roomDetails.light}}
+        {{this.roomDetails.w}}
 
-        {{#if (eq this.me this.roomDetails.light)}}
+        {{#if (eq this.me this.roomDetails.w)}}
           <span class='rounded-lg py-1 px-2 bg-green-700 text-white'>
             Me
           </span>
@@ -46,7 +46,7 @@
     </div>
     <div
       class='flex p-2 rounded
-        {{if (eq this.roomDetails.turn "dark") "bg-green-400" "bg-gray-200"}}'
+        {{if (eq this.turn "b") "bg-green-400" "bg-gray-200"}}'
     >
       <dt class='flex items-center'>
         <Piece @type='n' @color='b' />
@@ -55,8 +55,8 @@
       </dt>
       <dd
         class='ml-2 flex justify-between items-center w-full'
-      >{{this.roomDetails.dark}}
-        {{#if (eq this.me this.roomDetails.dark)}}
+      >{{this.roomDetails.b}}
+        {{#if (eq this.me this.roomDetails.b)}}
           <span class='rounded-lg py-1 px-2 bg-green-700 text-white'>
             Me
           </span>

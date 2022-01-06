@@ -1,5 +1,12 @@
 import { Server } from '@logux/server';
 
+type RoomDetails = {
+  w: string;
+  b: string;
+  turn: 'b' | 'w';
+  fen?: string;
+};
+
 const env = process.env.NODE_ENV || 'development';
 const server = new Server(
   Server.loadOptions(process, {
@@ -18,12 +25,7 @@ server.auth(() => {
 let count = 0;
 const rooms: string[] = [];
 const roomAccess: {
-  [K in string]: {
-    light: string;
-    dark: string;
-    turn: 'light' | 'dark';
-    fen?: string;
-  };
+  [K in string]: RoomDetails;
 } = {};
 
 server.channel('counter', {
@@ -99,17 +101,17 @@ server.channel<{ id: string }>('room/:id', {
 
     if (!roomAccess[id]) {
       roomAccess[id] = {
-        light: undefined,
-        dark: undefined,
-        turn: 'light',
+        b: undefined,
+        w: undefined,
+        turn: 'w',
         fen: undefined,
       };
     }
 
-    if (!roomAccess[id].light) {
-      roomAccess[id].light = ctx.userId;
-    } else if (!roomAccess[id].dark) {
-      roomAccess[id].dark = ctx.userId;
+    if (!roomAccess[id].w) {
+      roomAccess[id].w = ctx.userId;
+    } else if (!roomAccess[id].b && roomAccess[id].w !== ctx.userId) {
+      roomAccess[id].b = ctx.userId;
     }
 
     return {
@@ -132,44 +134,79 @@ server.type('room/ENTERED', {
   },
 });
 
-server.type<{ type: string; payload: { fen: string; roomId: string } }>(
-  'room/MOVE_PIECE',
-  {
-    access(ctx, action) {
-      const room = roomAccess[action.payload.roomId];
-      console.log(room);
-      if (!room) {
-        return false;
-      }
+server.type<{
+  type: string;
+  payload: { fen: string; roomId: string; move: { from: string; to: string } };
+}>('room/MOVE_PIECE', {
+  access(ctx, action) {
+    const room = roomAccess[action.payload.roomId];
+    console.log(room);
+    if (!room) {
+      return false;
+    }
 
-      const isDark = room.dark === ctx.userId;
-      const isLight = room.light === ctx.userId;
-      const isPlayer = isLight || isDark;
+    const isDark = room.b === ctx.userId;
+    const isLight = room.w === ctx.userId;
+    const isPlayer = isLight || isDark;
 
-      console.log({ isDark, isLight, isPlayer });
+    console.log({ isDark, isLight, isPlayer });
 
-      if (!isPlayer) {
-        return false;
-      }
+    if (!isPlayer) {
+      return false;
+    }
 
-      return (
-        (room.turn === 'light' && isLight) || (room.turn === 'dark' && isDark)
-      );
-    },
-    resend(ctx, action) {
-      return `room/${action.payload.roomId}`;
-    },
-    async process(ctx, action) {
-      const room = roomAccess[action.payload.roomId];
+    const turn = getCurrentTurn(room, ctx.userId);
 
-      if (room) {
-        room.fen = action.payload.fen;
-        room.turn = room.turn === 'light' ? 'dark' : 'light';
-      }
+    return (turn === 'w' && isLight) || (turn === 'b' && isDark);
+  },
+  resend(ctx, action) {
+    return `room/${action.payload.roomId}`;
+  },
+  async process(ctx, action) {
+    const room = roomAccess[action.payload.roomId];
 
-      ctx.sendBack({ type: 'room/ENTERED', payload: room });
-    },
-  }
-);
+    if (room) {
+      room.fen = action.payload.fen;
+    }
+
+    const opponentsId = getOpponentsId(room, ctx.userId);
+
+    server.log.add(
+      { type: 'room/TURN_FINISHED', payload: { move: action.payload.move } },
+      { users: [opponentsId] }
+    );
+  },
+});
+
+server.type('room/TURN_FINISHED', {
+  access() {
+    return true;
+  },
+  resend(ctx, action) {
+    return `room`;
+  },
+  async process(ctx, action) {
+    // noop
+    // test
+  },
+});
 
 server.listen();
+
+function getOpponentsId(room: RoomDetails, currentUserId: string) {
+  if (room.w === currentUserId) {
+    return room.b;
+  }
+
+  if (room.b === currentUserId) {
+    return room.w;
+  }
+}
+
+function getCurrentTurn(room: RoomDetails, currentUserId: string): 'b' | 'w' {
+  if (currentUserId === room.b) {
+    return 'b';
+  } else if (currentUserId === room.w) {
+    return 'w';
+  }
+}

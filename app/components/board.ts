@@ -12,10 +12,10 @@ interface BoardArgs {
 }
 
 interface RoomDetails {
-  dark: string;
-  light: string;
+  w: string;
+  b: string;
   fen?: string;
-  turn: 'light' | 'dark';
+  turn: 'w' | 'b';
 }
 
 export default class Board extends Component<BoardArgs> {
@@ -28,6 +28,7 @@ export default class Board extends Component<BoardArgs> {
     type: Chess.PieceType;
     color: 'b' | 'w';
   } | null)[][];
+  @tracked turn: 'b' | 'w' = 'w';
   @tracked roomDetails?: RoomDetails = undefined;
 
   emptyList = [...Array(8)];
@@ -40,8 +41,9 @@ export default class Board extends Component<BoardArgs> {
     this.chess = new Chess();
     this.board = this.chess.board();
 
-    this.channel.globalType('room/MOVE_PIECE', (action) =>
-      this.updateAfterMove((action.payload as { fen: string }).fen)
+    this.channel.globalType<{ move: Chess.ShortMove }>(
+      'room/MOVE_PIECE',
+      (action) => this.updateAfterMove(action.payload.move)
     );
     this.channel.globalType<RoomDetails>('room/ENTERED', (action) => {
       const fen = action.payload.fen;
@@ -53,6 +55,17 @@ export default class Board extends Component<BoardArgs> {
 
       this.roomDetails = action.payload;
     });
+    this.channel.globalType<{ move: Chess.ShortMove }>(
+      'room/TURN_FINISHED',
+      (action) => {
+        const move = action.payload.move;
+
+        if (move) {
+          this.chess.move(move);
+          this.updateBoard();
+        }
+      }
+    );
     this.channel.globalType('logux/undo', (action) => {
       if ((action as any).action.type === 'room/MOVE_PIECE') {
         this.chess.undo();
@@ -72,15 +85,36 @@ export default class Board extends Component<BoardArgs> {
     return window.location.search.replace('?', '');
   }
 
+  get isMyTurn() {
+    if (!this.roomDetails) {
+      return false;
+    }
+
+    if (this.turn === 'b' && this.roomDetails.b === this.me) {
+      return true;
+    } else if (this.turn === 'w' && this.roomDetails.w === this.me) {
+      return true;
+    }
+
+    return false;
+  }
+
   @action
   selectSquare(piece: Chess.Piece | null, square: Chess.Square) {
+    if (!this.isMyTurn) {
+      return;
+    }
     // Make move if selecting a valid square
     if (this.selectedSquare && this.highlightedSquares?.includes(square)) {
       this.chess.move({ from: this.selectedSquare, to: square });
       this.channel.globalSync('room/MOVE_PIECE', {
         roomId: this.args.roomId,
         fen: this.chess.fen(),
+        move: { from: this.selectedSquare, to: square },
       });
+      this.selectedSquare = undefined;
+      this.highlightedSquares = undefined;
+      return;
     }
 
     this.highlightedSquares = getLegalMovesForPiece(this.chess, piece, square);
@@ -94,19 +128,20 @@ export default class Board extends Component<BoardArgs> {
   }
 
   @action
-  updateAfterMove(fen: string) {
-    if (!fen) {
+  updateAfterMove(move: Chess.ShortMove) {
+    if (!move) {
       this.chess.reset();
       this.updateBoard();
       return;
     }
 
-    this.chess.load(fen);
+    this.chess.move(move);
     this.updateBoard();
   }
 
   updateBoard() {
     this.board = this.chess.board();
+    this.turn = this.chess.turn();
   }
 }
 
