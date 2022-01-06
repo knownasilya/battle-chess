@@ -104,13 +104,25 @@ export default class Board extends Component<BoardArgs> {
     if (!this.isMyTurn) {
       return;
     }
+
     // Make move if selecting a valid square
     if (this.selectedSquare && this.highlightedSquares?.includes(square)) {
-      this.chess.move({ from: this.selectedSquare, to: square });
+      const move: Chess.ShortMove = { from: this.selectedSquare, to: square };
+      const needsPromotion = isPromotion(this.chess, move);
+      let promotion: 'n' | 'b' | 'r' | 'q' | undefined;
+
+      if (needsPromotion) {
+        promotion = window.prompt(
+          'Enter piece code for promotion ("p" for Pawn, "n" for Knight, "b" for Bishop, "r" for Rook, "q" for Queen, "k" for King)'
+        ) as 'n' | 'b' | 'r' | 'q' | undefined;
+        move.promotion = promotion;
+      }
+
+      this.chess.move(move);
       this.channel.globalSync('room/MOVE_PIECE', {
         roomId: this.args.roomId,
         fen: this.chess.fen(),
-        move: { from: this.selectedSquare, to: square },
+        move,
       });
       this.selectedSquare = undefined;
       this.highlightedSquares = undefined;
@@ -154,3 +166,10 @@ const getLegalMovesForPiece = (
 
   return game.moves({ square, verbose: true }).map((move) => move.to);
 };
+
+const isPromotion = (chess: Chess.ChessInstance, move: Chess.ShortMove) =>
+  chess
+    .moves({ verbose: true })
+    .filter(
+      (m) => m.from === move.from && m.to === move.to && m.flags.includes('p')
+    ).length > 0;
