@@ -1,0 +1,18 @@
+<div
+  class='p-4 grid gap-4 sm:grid-cols-2 sm:grid-rows-1 grid-cols-1 grid-rows-2'
+>
+  <Board
+    @orientation='white'
+    @roomId={{@model.id}}
+    @cardInPlay={{this.cardInPlay}}
+    @finishWithCard={{this.removeCard}}
+  />
+</div>
+
+<div class='p-4'>
+  <CardHand
+    @cards={{this.cards}}
+    @playCard={{fn (mut this.cardInPlay)}}
+    @cardInPlay={{this.cardInPlay}}
+  />
+</div>

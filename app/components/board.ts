@@ -3,12 +3,15 @@ import { action } from '@ember/object';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { Channel } from 'bchess/services/core';
+import cards from 'bchess/utils/cards';
 import * as Chess from 'chess.js';
 import { useResource } from 'ember-resources';
 
 interface BoardArgs {
   roomId: string;
-  orientation: 'black' | 'white';
+  orientation?: 'black' | 'white';
+  cardInPlay?: typeof cards[number];
+  finishWithCard: (card: typeof cards[number]) => void;
 }
 
 interface RoomDetails {
@@ -41,9 +44,9 @@ export default class Board extends Component<BoardArgs> {
     this.chess = new Chess();
     this.board = this.chess.board();
 
-    this.channel.globalType<{ move: Chess.ShortMove }>(
+    this.channel.globalType<{ move?: Chess.ShortMove; fen?: string }>(
       'room/MOVE_PIECE',
-      (action) => this.updateAfterMove(action.payload.move)
+      (action) => this.updateAfterMove(action.payload.move, action.payload.fen)
     );
     this.channel.globalType<RoomDetails>('room/ENTERED', (action) => {
       const fen = action.payload.fen;
@@ -55,15 +58,17 @@ export default class Board extends Component<BoardArgs> {
 
       this.roomDetails = action.payload;
     });
-    this.channel.globalType<{ move: Chess.ShortMove }>(
+    this.channel.globalType<{ move?: Chess.ShortMove; fen?: string }>(
       'room/TURN_FINISHED',
       (action) => {
         const move = action.payload.move;
 
         if (move) {
           this.chess.move(move);
-          this.updateBoard();
+        } else if (action.payload.fen) {
+          this.chess.load(action.payload.fen);
         }
+        this.updateBoard();
       }
     );
     this.channel.globalType('logux/undo', (action) => {
@@ -105,6 +110,20 @@ export default class Board extends Component<BoardArgs> {
       return;
     }
 
+    if (this.args.cardInPlay) {
+      if (this.args.cardInPlay.id === 'remove-piece') {
+        this.chess.remove(square);
+        this.channel.globalSync('room/MOVE_PIECE', {
+          roomId: this.args.roomId,
+          fen: this.chess.fen(),
+        });
+        this.selectedSquare = undefined;
+        this.highlightedSquares = undefined;
+        this.args.finishWithCard(this.args.cardInPlay);
+        return;
+      }
+    }
+
     // Make move if selecting a valid square
     if (this.selectedSquare && this.highlightedSquares?.includes(square)) {
       const move: Chess.ShortMove = { from: this.selectedSquare, to: square };
@@ -140,14 +159,15 @@ export default class Board extends Component<BoardArgs> {
   }
 
   @action
-  updateAfterMove(move: Chess.ShortMove) {
-    if (!move) {
+  updateAfterMove(move?: Chess.ShortMove, fen?: string) {
+    if (move) {
+      this.chess.move(move);
+    } else if (fen) {
+      this.chess.load(fen);
+    } else {
       this.chess.reset();
-      this.updateBoard();
-      return;
     }
 
-    this.chess.move(move);
     this.updateBoard();
   }
 

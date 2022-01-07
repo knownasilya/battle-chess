@@ -172,7 +172,10 @@ server.type<{
     const opponentsId = getOpponentsId(room, ctx.userId);
 
     server.log.add(
-      { type: 'room/TURN_FINISHED', payload: { move: action.payload.move } },
+      {
+        type: 'room/TURN_FINISHED',
+        payload: { move: action.payload.move, fen: room.fen },
+      },
       { users: [opponentsId] }
     );
   },
