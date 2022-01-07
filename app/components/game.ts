@@ -13,5 +13,6 @@ export default class Game extends Component<GameArgs> {
   removeCard(card: Card) {
     this.cards.splice(this.cards.indexOf(card), 1);
     this.cards = [...this.cards];
+    this.cardInPlay = undefined;
   }
 }
