@@ -8,6 +8,7 @@ import { getOwner } from '@ember/application';
 import { Resource } from 'ember-resources';
 import { helper } from '@ember/component/helper';
 import { ClientActionListener } from '@logux/client/client';
+import Config from '../config/environment';
 
 type Owner = { lookup: <T>(value: string) => T };
 
@@ -121,7 +122,7 @@ export default class Core extends Service {
   setup({ userId, token }: { userId: string; token?: string }) {
     const client = new CrossTabClient({
       subprotocol: '1.0.0',
-      server: 'ws://127.0.0.1:31337',
+      server: Config.APP?.LOGUX_URL || 'ws://127.0.0.1:31337',
       userId,
       token,
     });
