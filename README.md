@@ -3,7 +3,7 @@
 Alternate take on chess.
 Run `yarn logux` and `yarn start`
 
-Test multiplayer by adding `?<yourname>` to the url bar. And have someone do the same with the same room but another username. No auth yet.
+Test multiplayer by adding `?<yourname>` to the url bar. And have someone do the same with the same room but another username.
 
 ## Prerequisites
 
