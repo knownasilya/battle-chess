@@ -1,16 +1,26 @@
-<li class='grid gap-2 grid-cols-6'>
+<li class='grid gap-4 grid-cols-5'>
   {{#each @cards as |card|}}
     <li
-      class='rounded shadow-md w-18 h-72 p-4 flex flex-col items-center justify-between hover:shadow-lg
+      class='rounded shadow-md w-44 h-64 flex flex-col items-stretch justify-between hover:shadow-lg
         {{if
           (eq @cardInPlay card)
           "border-indigo-700 border-2"
           "border-gray-500 border"
         }}'
     >
-      {{card.name}}
+      <div
+        class='h-1/2 text-center flex flex-col justify-center text-white bg-orange-900'
+      >
+        {{card.name}}
+      </div>
 
-      <button type='button' {{on 'click' (fn @playCard card)}}>Play</button>
+      <p class='p-4'>{{card.description}}</p>
+
+      <button
+        class='mb-4'
+        type='button'
+        {{on 'click' (fn @playCard card)}}
+      >Play</button>
     </li>
   {{/each}}
 </li>
