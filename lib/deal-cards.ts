@@ -15,8 +15,6 @@ export default function dealCards(numberOfCards = 5): Card[] {
   while (cardsDealt.length < numberOfCards - 1) {
     const cardId = weighted(cardWeights) as Card['id'];
 
-    console.log({ cardId });
-
     cardsDealt.push(cardId);
   }
 
