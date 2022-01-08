@@ -1,4 +1,5 @@
 import { Server } from '@logux/server';
+import dealCards from './deal-cards';
 
 type RoomDetails = {
   w: string;
@@ -116,7 +117,7 @@ server.channel<{ id: string }>('room/:id', {
 
     return {
       type: `room/ENTERED`,
-      payload: { ...roomAccess[id] },
+      payload: { ...roomAccess[id], cards: dealCards() },
     };
   },
 });

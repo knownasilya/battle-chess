@@ -2,11 +2,59 @@
   class='p-4 grid gap-4 sm:grid-cols-2 sm:grid-rows-1 grid-cols-1 grid-rows-2'
 >
   <Board
+    @board={{this.board}}
     @orientation='white'
-    @roomId={{@model.id}}
-    @cardInPlay={{this.cardInPlay}}
-    @finishWithCard={{this.removeCard}}
+    @selectedSquare={{this.selectedSquare}}
+    @hoveredSquare={{this.hoveredSquare}}
+    @highlightedSquares={{this.highlightedSquares}}
+    @selectSquare={{this.selectSquare}}
   />
+
+  <div>
+    <dl class='grid gap-2 grid-rows-2'>
+      <div
+        class='flex p-2 rounded
+          {{if (eq this.turn "w") "bg-green-400" "bg-gray-200"}}'
+      >
+        <dt class='flex items-center'>
+          <Piece @type='n' @color='w' />
+
+          Light
+        </dt>
+        <dd class='ml-2 flex justify-between items-center w-full'>
+          {{this.roomDetails.w}}
+
+          {{#if (eq this.me this.roomDetails.w)}}
+            <span class='rounded-lg py-1 px-2 bg-green-700 text-white'>
+              Me
+            </span>
+          {{/if}}
+        </dd>
+      </div>
+      <div
+        class='flex p-2 rounded
+          {{if (eq this.turn "b") "bg-green-400" "bg-gray-200"}}'
+      >
+        <dt class='flex items-center'>
+          <Piece @type='n' @color='b' />
+
+          Dark
+        </dt>
+        <dd
+          class='ml-2 flex justify-between items-center w-full'
+        >{{this.roomDetails.b}}
+          {{#if (eq this.me this.roomDetails.b)}}
+            <span class='rounded-lg py-1 px-2 bg-green-700 text-white'>
+              Me
+            </span>
+          {{/if}}
+        </dd>
+      </div>
+    </dl>
+
+    <p class='mt-2 text-gray-700'>{{this.hoveredSquare}}</p>
+
+  </div>
 </div>
 
 <div class='p-4'>

@@ -13,10 +13,18 @@ const cards = [
   //   afterPlay: 'end-turn',
   // },
   {
+    id: 'add-piece',
+    name: 'Backup',
+    description: 'Add any piece to the board',
+    afterPlay: 'end-turn',
+    weight: 0.2,
+  },
+  {
     id: 'remove-piece',
     name: 'The Axe',
     description: 'Remove any piece off the board',
     afterPlay: 'end-turn',
+    weight: 0.8,
   },
 ];
 

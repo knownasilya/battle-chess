@@ -1,11 +1,10 @@
 import cards from 'bchess/utils/cards';
 import { module, test } from 'qunit';
 
-module('Unit | Utility | cards', function(hooks) {
-
+module('Unit | Utility | cards', function () {
   // Replace this with your real tests.
-  test('it works', function(assert) {
-    const result = cards();
-    assert.ok(result);
+  test('it works', function (assert) {
+    const result = cards;
+    assert.ok(result.length);
   });
 });
