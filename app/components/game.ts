@@ -110,15 +110,24 @@ export default class Game extends Component<GameArgs> {
     if (this.cardInPlay) {
       if (this.cardInPlay.id === 'remove-piece') {
         this.chess.remove(square);
-        this.channel.globalSync('room/MOVE_PIECE', {
-          roomId: this.args.roomId,
-          fen: this.chess.fen(),
-        });
-        this.selectedSquare = undefined;
-        this.highlightedSquares = undefined;
-        this.removeCard(this.cardInPlay);
-        return;
+      } else if (this.cardInPlay.id === 'add-piece') {
+        let piece;
+        while (!piece || piece === 'k' || piece === 'q') {
+          piece = window.prompt(
+            'Which piece (except for royalty)?'
+          ) as Chess.PieceType;
+        }
+        this.chess.put({ type: piece, color: this.turn }, square);
       }
+
+      this.channel.globalSync('room/MOVE_PIECE', {
+        roomId: this.args.roomId,
+        fen: this.chess.fen(),
+      });
+      this.selectedSquare = undefined;
+      this.highlightedSquares = undefined;
+      this.removeCard(this.cardInPlay);
+      return;
     }
 
     // Make move if selecting a valid square
