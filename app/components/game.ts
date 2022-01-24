@@ -108,16 +108,32 @@ export default class Game extends Component<GameArgs> {
     }
 
     if (this.cardInPlay) {
-      if (this.cardInPlay.id === 'remove-piece') {
-        this.chess.remove(square);
-      } else if (this.cardInPlay.id === 'add-piece') {
-        let piece;
-        while (!piece || piece === 'k' || piece === 'q') {
-          piece = window.prompt(
-            'Which piece (except for royalty)?'
-          ) as Chess.PieceType;
+      switch (this.cardInPlay?.id) {
+        case 'remove-piece': {
+          this.chess.remove(square);
+          break;
         }
-        this.chess.put({ type: piece, color: this.turn }, square);
+        case 'add-piece': {
+          // Canceling the prompt returns `null` and stops playing this card
+          let piece = undefined;
+
+          while (piece === undefined || piece === 'k' || piece === 'q') {
+            piece = window.prompt(
+              'Which piece (except for royalty)?'
+            ) as Chess.PieceType;
+          }
+
+          if (!piece) {
+            // TODO: Remove card from in-play
+            return;
+          }
+
+          this.chess.put({ type: piece, color: this.turn }, square);
+          break;
+        }
+        default: {
+          alert('unimplemented');
+        }
       }
 
       this.channel.globalSync('room/MOVE_PIECE', {
