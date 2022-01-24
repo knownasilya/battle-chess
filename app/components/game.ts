@@ -124,7 +124,7 @@ export default class Game extends Component<GameArgs> {
           }
 
           if (!piece) {
-            // TODO: Remove card from in-play
+            this.cardInPlay = undefined;
             return;
           }
 
