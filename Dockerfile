@@ -6,7 +6,7 @@ FROM node:lts-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile --ignore-scripts --production
+RUN yarn install --frozen-lockfile --ignore-scripts
 
 # Production image, copy all the files and run Logux
 FROM node:lts-alpine AS runner
@@ -18,7 +18,7 @@ RUN addgroup -g 1001 -S nodejs
 RUN adduser -S logux -u 1001
 
 # Copy all files
-COPY index.js .
+COPY lib/ .
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/package.json ./package.json
 
