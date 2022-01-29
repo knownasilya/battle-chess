@@ -1,4 +1,5 @@
 import Service from '@ember/service';
+// @ts-expect-error notypes
 import { registerDestructor } from '@ember/destroyable';
 import { CrossTabClient, badge, badgeEn, log } from '@logux/client';
 import { badgeStyles } from '@logux/client/badge/styles';

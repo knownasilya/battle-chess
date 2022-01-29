@@ -8,5 +8,10 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    // eslint-disable node/no-extraneous-require
+    require('@frontile/core/tailwind'),
+    require('@frontile/overlays/tailwind'),
+    require('@frontile/buttons/tailwind'),
+  ],
 };
