@@ -18,7 +18,6 @@ RUN addgroup -g 1001 -S nodejs
 RUN adduser -S logux -u 1001
 
 # Copy all files
-COPY app/ ./app
 COPY lib/ ./lib
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/package.json ./package.json
