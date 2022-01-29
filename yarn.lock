@@ -1217,7 +1217,7 @@
     "@embroider/shared-internals" "^1.0.0"
     semver "^7.3.5"
 
-"@embroider/macros@0.41.0":
+"@embroider/macros@0.41.0", "@embroider/macros@^0.41.0":
   version "0.41.0"
   resolved "https://registry.yarnpkg.com/@embroider/macros/-/macros-0.41.0.tgz#3e78b6f388d7229906abf4c75edfff8bb0208aca"
   integrity sha512-QISzwEEfLsskZeL0jyZDs1RoQSotwBWj+4upTogNHuxQP5j/9H3IMG/3QB1gh8GEpbudATb/cS4NDYK3UBxufw==
@@ -1242,7 +1242,7 @@
     resolve "^1.20.0"
     semver "^7.3.2"
 
-"@embroider/macros@>= 0.48.1 < 2.0.0-alpha.1", "@embroider/macros@^1.0.0":
+"@embroider/macros@>= 0.48.1 < 2.0.0-alpha.1", "@embroider/macros@^0.50.0 || ^1.0.0", "@embroider/macros@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@embroider/macros/-/macros-1.0.0.tgz#2dfab550ba4e03cbf6e3524759949749ced98cc2"
   integrity sha512-RutDJ27j1eFQulyv83yJm27oSypsMd/UZyy62Q0NU00TIsIgQPCXaDiGIONWcJuAAVbtBRP3X4LMvaBAeq5g+A==
@@ -1252,6 +1252,18 @@
     babel-import-util "^1.1.0"
     ember-cli-babel "^7.26.6"
     find-up "^5.0.0"
+    lodash "^4.17.21"
+    resolve "^1.20.0"
+    semver "^7.3.2"
+
+"@embroider/macros@^0.42.3":
+  version "0.42.3"
+  resolved "https://registry.yarnpkg.com/@embroider/macros/-/macros-0.42.3.tgz#eb4dc35c43f1cb1d14298219ba037f8cead06081"
+  integrity sha512-4I+Sde8FU7QMwNQ3gYtj8fdBTqUeoPDn61XuV4Xng7p9LszQksGDXtyEhWrf9KWU3G+NtrZotY5LICd5P+E3tw==
+  dependencies:
+    "@embroider/shared-internals" "0.42.3"
+    assert-never "^1.2.1"
+    ember-cli-babel "^7.26.6"
     lodash "^4.17.21"
     resolve "^1.20.0"
     semver "^7.3.2"
@@ -1268,6 +1280,19 @@
     resolve-package-path "^1.2.2"
     semver "^7.3.2"
     typescript-memoize "^1.0.0-alpha.3"
+
+"@embroider/shared-internals@0.42.3":
+  version "0.42.3"
+  resolved "https://registry.yarnpkg.com/@embroider/shared-internals/-/shared-internals-0.42.3.tgz#65224fe86c55790417078b267add8f54148b59e3"
+  integrity sha512-AIFRumaGxzhzzSswtk97Z0ttu0dyRhXoDuOi6kPYHoprUdtt7biRAksrsbutWWdFapve7vKHFZdYVuiG8IbX0A==
+  dependencies:
+    ember-rfc176-data "^0.3.17"
+    fs-extra "^9.1.0"
+    lodash "^4.17.21"
+    pkg-up "^3.1.0"
+    resolve-package-path "^4.0.1"
+    semver "^7.3.5"
+    typescript-memoize "^1.0.1"
 
 "@embroider/shared-internals@0.47.2":
   version "0.47.2"
@@ -1364,6 +1389,18 @@
     ember-cli-htmlbars "^6.0.1"
     ember-cli-typescript "^4.2.1"
 
+"@frontile/changeset-form@^0.13.0":
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/@frontile/changeset-form/-/changeset-form-0.13.0.tgz#3f4f0c93e8789434711b307fbfa24fc061254be5"
+  integrity sha512-fDG3LLFacgxs7EAxVV+ZtJ064yFWxAs2n6tify47Qthlyp5ohV37UP0g3E0T+7pCGHEJa0ItEoET50qSNyZs8g==
+  dependencies:
+    "@frontile/forms" "^0.13.0"
+    ember-changeset "^3.15.0"
+    ember-changeset-validations "^3.16.0"
+    ember-cli-babel "^7.26.11"
+    ember-cli-htmlbars "^6.0.1"
+    ember-cli-typescript "^4.2.1"
+
 "@frontile/core@^0.13.0":
   version "0.13.0"
   resolved "https://registry.yarnpkg.com/@frontile/core/-/core-0.13.0.tgz#bd89ff2cd74c9ac48b2e7a01d509f359ee2db892"
@@ -1390,6 +1427,20 @@
     ember-power-select "5.0.3"
     ember-test-selectors "^6.0.0"
     tailwindcss-ember-power-select "^0.4.1"
+
+"@frontile/notifications@^0.13.0":
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/@frontile/notifications/-/notifications-0.13.0.tgz#a56bee89895890edfe87263ef55f8942c23b5cbc"
+  integrity sha512-Yawp52a513FAzrhqeyKIAIxAbusVTHiSslwE9uaAIWhbGT2Rpg031eRhk5zCUj23onGA8ZNpQWSINEqodgrprQ==
+  dependencies:
+    "@ember/render-modifiers" "^2.0.3"
+    "@frontile/core" "^0.13.0"
+    "@frontile/tailwindcss-plugin-helpers" "^0.13.0"
+    ember-cli-babel "^7.26.11"
+    ember-cli-htmlbars "^6.0.1"
+    ember-cli-typescript "^4.2.1"
+    ember-css-transitions "^2.1.1"
+    ember-get-config "^1.0.2"
 
 "@frontile/overlays@^0.13.0":
   version "0.13.0"
@@ -1482,7 +1533,7 @@
     "@handlebars/parser" "^1.1.0"
     simple-html-tokenizer "^0.5.10"
 
-"@glimmer/tracking@^1.0.4":
+"@glimmer/tracking@^1.0.1", "@glimmer/tracking@^1.0.4":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@glimmer/tracking/-/tracking-1.0.4.tgz#f1bc1412fe5e2236d0f8d502994a8f88af1bbb21"
   integrity sha512-F+oT8I55ba2puSGIzInmVrv/8QA2PcK1VD+GWgFMhF6WC97D+uZX7BFg+a3s/2N4FVBq5KHE+QxZzgazM151Yw==
@@ -3576,6 +3627,14 @@ broccoli-debug@^0.6.4, broccoli-debug@^0.6.5:
     symlink-or-copy "^1.1.8"
     tree-sync "^1.2.2"
 
+broccoli-file-creator@^1.1.1:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/broccoli-file-creator/-/broccoli-file-creator-1.2.0.tgz#27f1b25b1b00e7bb7bf3d5d7abed5f4d5388df4d"
+  integrity sha512-l9zthHg6bAtnOfRr/ieZ1srRQEsufMZID7xGYRW3aBDv3u/3Eux+Iawl10tAGYE5pL9YB4n5X4vxkp6iNOoZ9g==
+  dependencies:
+    broccoli-plugin "^1.1.0"
+    mkdirp "^0.5.1"
+
 broccoli-file-creator@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/broccoli-file-creator/-/broccoli-file-creator-2.1.1.tgz#7351dd2496c762cfce7736ce9b49e3fce0c7b7db"
@@ -5211,6 +5270,29 @@ ember-cached-decorator-polyfill@^0.1.4:
     ember-cli-babel "^7.21.0"
     ember-cli-babel-plugin-helpers "^1.1.1"
 
+ember-changeset-validations@^3.16.0:
+  version "3.16.0"
+  resolved "https://registry.yarnpkg.com/ember-changeset-validations/-/ember-changeset-validations-3.16.0.tgz#f1785e2ce3bad80dcb42681b0a782eae72b40127"
+  integrity sha512-/qkxEf5ZmoRn2um7xRjGbYOCFnTlBJt6dX7CzxQZzQvJDXYJVLzTSw5iaZ53pGi//bhzbFeQMgoxqPsHxQNI3w==
+  dependencies:
+    ember-changeset "^3.15.0"
+    ember-cli-babel "^7.26.6"
+    ember-cli-htmlbars "^5.7.1"
+    ember-get-config "^0.3.0"
+    ember-validators "~4.0.0"
+    validated-changeset "~1.0.0"
+
+ember-changeset@^3.15.0:
+  version "3.15.0"
+  resolved "https://registry.yarnpkg.com/ember-changeset/-/ember-changeset-3.15.0.tgz#402bbb9b51dc44596415c1c7b0e3a4923b1d3e81"
+  integrity sha512-yLyU3quV96EFjYzYUjIK4je5nnemZdbElYLFnXYJ5StXquCRjdFvL79gst/vs6ZjVFbkRKnLjsVP8YMkED0P2g==
+  dependencies:
+    "@embroider/macros" "^0.42.3"
+    "@glimmer/tracking" "^1.0.1"
+    ember-auto-import "^1.11.3"
+    ember-cli-babel "^7.26.6"
+    validated-changeset "1.0.0"
+
 ember-cli-app-version@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/ember-cli-app-version/-/ember-cli-app-version-5.0.0.tgz#adad17c6f706f419b223707eec66dd1cd28530c3"
@@ -5754,6 +5836,22 @@ ember-focus-trap@^1.0.1:
     "@embroider/addon-shim" "^1.0.0"
     focus-trap "^6.7.1"
 
+ember-get-config@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/ember-get-config/-/ember-get-config-0.3.0.tgz#a73a1a87b48d9dde4c66a0e52ed5260b8a48cfbd"
+  integrity sha512-0e2pKzwW5lBZ4oJnvu9qHOht4sP1MWz/m3hyz8kpSoMdrlZVf62LDKZ6qfKgy8drcv5YhCMYE6QV7MhnqlrzEQ==
+  dependencies:
+    broccoli-file-creator "^1.1.1"
+    ember-cli-babel "^7.0.0"
+
+ember-get-config@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/ember-get-config/-/ember-get-config-1.0.2.tgz#f8349a132763008bad37d46d53c8250a0e18d464"
+  integrity sha512-G8sPknLvHEk0o8yrfs0+1WSeIPy1zOLxMJSm+ESYXy8MTnvxOFX127JSA7CcYmBq21GrDEIe0TL1Y+4cN9tEng==
+  dependencies:
+    "@embroider/macros" "^0.50.0 || ^1.0.0"
+    ember-cli-babel "^7.26.6"
+
 ember-in-element-polyfill@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/ember-in-element-polyfill/-/ember-in-element-polyfill-1.0.1.tgz#143504445bb4301656a2eaad42644d684f5164dd"
@@ -6025,6 +6123,15 @@ ember-tracked-storage-polyfill@^1.0.0:
   integrity sha512-hPKG9QqruAELh0li5xaiLZtr88ioWYxWCXisAWHWE0qCP4a2hgtuMzKUPpiTCkltvKjuqpzTZCU4VhQ+IlRmew==
   dependencies:
     ember-cli-babel "^7.22.1"
+
+ember-validators@~4.0.0:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/ember-validators/-/ember-validators-4.0.1.tgz#13beefdf185b00efd1b60e51b21380686d8994ba"
+  integrity sha512-QVHzzYQn17Ikz8EZVxEtjKRyr6fmwSUbjYpxjcuoZKN5Ub1jjU2LzPOXT6FJQet691UlBs35e6EjPkBOb+xOuA==
+  dependencies:
+    "@embroider/macros" "^0.41.0"
+    ember-cli-babel "^7.26.3"
+    ember-cli-htmlbars "^5.7.1"
 
 ember-welcome-page@^6.0.0:
   version "6.1.0"
@@ -12048,6 +12155,11 @@ validate-peer-dependencies@^1.1.0, validate-peer-dependencies@^1.2.0:
   dependencies:
     resolve-package-path "^3.1.0"
     semver "^7.3.2"
+
+validated-changeset@1.0.0, validated-changeset@~1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/validated-changeset/-/validated-changeset-1.0.0.tgz#a961b4a87953b6b12858b0477436360332493f4d"
+  integrity sha512-HeHGkC2BlmWTwtq5DTUMmFX18PAunuLbIs8A4CWoLc58QGKRF4jtR+F5XzP/19xysQXkMApazT2OphqJ+lKVwQ==
 
 vary@^1, vary@~1.1.2:
   version "1.1.2"
