@@ -21,7 +21,7 @@
     "start": "ember serve",
     "test": "npm-run-all lint test:*",
     "test:ember": "ember test",
-    "logux": "node ./lib-dist/app.js",
+    "logux": "node ./lib-dist/lib/app.js",
     "logux:build": "tsc -p ./lib/tsconfig.json",
     "logux:watch": "tsm lib/app.ts",
     "tailwind": "yarn tailwindcss -i ./app/styles/tailwind.css -o ./public/tailwind.css --watch"
