@@ -13,8 +13,8 @@ const server = new Server(
   Server.loadOptions(process, {
     subprotocol: '1.0.0',
     supports: '1.x',
-    // @ts-expect-error known
-    fileUrl: import.meta.url,
+    //fileUrl: import.meta.url,
+    fileUrl: __dirname + '/app.js',
   })
 );
 
