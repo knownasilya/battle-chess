@@ -23,6 +23,8 @@ COPY lib/ ./lib
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/package.json ./package.json
 
+RUN yarn logux:build
+
 USER logux
 
 EXPOSE 31337
