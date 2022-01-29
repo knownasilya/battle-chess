@@ -9,6 +9,7 @@
     "sourceMap": true,
     "outDir": "../lib-dist",
     "baseUrl": ".",
+    "skipLibCheck": true,
     "paths": {
       "*": ["node_modules/*", "types/*"]
     }
