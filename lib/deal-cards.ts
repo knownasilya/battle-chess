@@ -18,5 +18,9 @@ export default function dealCards(numberOfCards = 5): Card[] {
     cardsDealt.push(cardId);
   }
 
-  return cardsDealt.map((id) => cards.find((c) => c.id === id));
+  return cardsDealt.map((id) => cards.find((c) => c.id === id)).filter(isCard);
 }
+
+const isCard = (item: Card | undefined): item is Card => {
+  return !!item;
+};
