@@ -2,8 +2,8 @@ import { Server } from '@logux/server';
 import dealCards from './deal-cards';
 
 type RoomDetails = {
-  w: string;
-  b: string;
+  w?: string;
+  b?: string;
   turn: 'b' | 'w';
   fen?: string;
 };
@@ -172,6 +172,10 @@ server.type<{
 
     const opponentsId = getOpponentsId(room, ctx.userId);
 
+    if (!opponentsId) {
+      return;
+    }
+
     server.log.add(
       {
         type: 'room/TURN_FINISHED',
@@ -207,7 +211,10 @@ function getOpponentsId(room: RoomDetails, currentUserId: string) {
   }
 }
 
-function getCurrentTurn(room: RoomDetails, currentUserId: string): 'b' | 'w' {
+function getCurrentTurn(
+  room: RoomDetails,
+  currentUserId: string
+): 'b' | 'w' | undefined {
   if (currentUserId === room.b) {
     return 'b';
   } else if (currentUserId === room.w) {
