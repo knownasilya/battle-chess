@@ -11,47 +11,42 @@ module.exports = {
   plugins: [
     // eslint-disable node/no-extraneous-require
     require('@frontile/core/tailwind'),
-    require('@frontile/overlays/tailwind'),
     require('@frontile/buttons/tailwind'),
-    require('@frontile/forms/tailwind'),
     require('@frontile/notifications/tailwind'),
+    // require('@frontile/overlays/tailwind'),
+    // require('@frontile/forms/tailwind'),
   ],
-  purge: {
-    options: {
-      safelist: [
-        // Frontile Core
-        /^close-button/,
-        /^visually-hidden/,
+  // safelist: [
+  //   { pattern: /^close-button/ },
+  //   { pattern: /^visually-hidden/ },
 
-        // Frontile Forms
-        /^form-field-checkbox/,
-        /^form-field-feedback/,
-        /^form-field-hint/,
-        /^form-field-input/,
-        /^form-field-label/,
-        /^form-field-radio/,
-        /^form-field-textarea/,
-        /^form-input/,
-        /^form-textarea/,
-        /^form-select/,
-        /^form-checkbox/,
-        /^form-radio/,
-        /^form-checkbox-group/,
-        /^form-radio-group/,
+  //   // Frontile Forms
+  //   { pattern: /^form-field-checkbox/ },
+  //   { pattern: /^form-field-feedback/ },
+  //   { pattern: /^form-field-hint/ },
+  //   { pattern: /^form-field-input/ },
+  //   { pattern: /^form-field-label/ },
+  //   { pattern: /^form-field-radio/ },
+  //   { pattern: /^form-field-textarea/ },
+  //   { pattern: /^form-input/ },
+  //   { pattern: /^form-textarea/ },
+  //   { pattern: /^form-select/ },
+  //   { pattern: /^form-checkbox/ },
+  //   { pattern: /^form-radio/ },
+  //   { pattern: /^form-checkbox-group/ },
+  //   { pattern: /^form-radio-group/ },
 
-        // Frontile Notifications
-        /^notifications-container/,
-        /^notification-card/,
-        /^notification-transition/,
+  //   // Frontile Notifications
+  //   { pattern: /^notifications-container/ },
+  //   { pattern: /^notification-card/ },
+  //   { pattern: /^notification-transition/ },
 
-        // Frontile Overlays
-        /^overlay/,
-        /^modal/,
-        /^drawer/,
+  //   // Frontile Overlays
+  //   { pattern: /^overlay/ },
+  //   { pattern: /^modal/ },
+  //   { pattern: /^drawer/ },
 
-        // Frontile Buttons
-        /^btn/,
-      ],
-    },
-  },
+  //   // Frontile Buttons
+  //   { pattern: /^btn/ },
+  // ],
 };

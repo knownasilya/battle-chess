@@ -17,4 +17,7 @@ export default class Foyer extends Component {
     this.channel.sync('ADD_ROOM', formData.get('name'));
     form.reset();
   };
+
+  startGame = () => {};
+  joinGame = () => {};
 }

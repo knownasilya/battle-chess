@@ -1,20 +1,4 @@
-{{#if this.rooms}}
-  <ul>
-    {{#each this.rooms as |room|}}
-      <li>
-        <LinkTo @route='room' @model={{room}}>
-          {{room}}
-        </LinkTo>
-      </li>
-    {{/each}}
-  </ul>
-{{else}}
-  <p>No rooms yet. Maybe add one?</p>
-{{/if}}
-
-<form {{on 'submit' this.addRoom}}>
-  <label for='add-room-name'>Room Name</label>
-  <input name='name' id='add-room-name' placeholder='my-room' />
-
-  <button type='submit'>Add Room</button>
-</form>
+<div class='grid grid-cols-2 gap-2'>
+  <button type='button' {{on 'click' this.startGame}}>Start Game</button>
+  <button type='button' {{on 'click' this.joinGame}}>Join Game</button>
+</div>
