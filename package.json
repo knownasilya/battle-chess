@@ -21,9 +21,9 @@
     "start": "ember serve",
     "test": "npm-run-all lint test:*",
     "test:ember": "ember test",
-    "logux": "node ./lib-dist/lib/app.js",
+    "logux": "node ./lib-dist/lib/app.mjs",
     "logux:build": "tsc -p ./lib/tsconfig.json",
-    "logux:watch": "tsm lib/app.ts",
+    "logux:watch": "tsm lib/app.mts",
     "tailwind": "yarn tailwindcss -i ./app/styles/tailwind.css -o ./public/tailwind.css --watch"
   },
   "volta": {
@@ -72,8 +72,8 @@
     "@types/htmlbars-inline-precompile": "^1.0.1",
     "@types/qunit": "^2.11.3",
     "@types/rsvp": "^4.0.4",
-    "@typescript-eslint/eslint-plugin": "^5.8.1",
-    "@typescript-eslint/parser": "^5.8.1",
+    "@typescript-eslint/eslint-plugin": "^5.10.1",
+    "@typescript-eslint/parser": "^5.10.1",
     "broccoli-asset-rev": "^3.0.0",
     "chess.js": "^0.12.0",
     "ember-auto-import": "^2.2.4",

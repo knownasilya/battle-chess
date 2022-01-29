@@ -1,5 +1,5 @@
 import { Server } from '@logux/server';
-import dealCards from './deal-cards';
+import dealCards from './deal-cards.mjs';
 
 type RoomDetails = {
   w?: string;
@@ -8,8 +8,10 @@ type RoomDetails = {
   fen?: string;
 };
 
+// eslint-disable-next-line no-undef
 const env = process.env.NODE_ENV || 'development';
 const server = new Server(
+  // eslint-disable-next-line no-undef
   Server.loadOptions(process, {
     subprotocol: '1.0.0',
     supports: '1.x',
