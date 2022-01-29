@@ -1,12 +1,11 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es6",
+    "module": "esnext",
+    "lib": ["ES2019"],
+    "moduleResolution": "node",
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "../lib-dist",
     "baseUrl": ".",

@@ -13,8 +13,7 @@ const server = new Server(
   Server.loadOptions(process, {
     subprotocol: '1.0.0',
     supports: '1.x',
-    //fileUrl: import.meta.url,
-    fileUrl: __dirname + '/app.js',
+    fileUrl: import.meta.url,
   })
 );
 
