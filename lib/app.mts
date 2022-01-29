@@ -1,5 +1,11 @@
 import { Server } from '@logux/server';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import dealCards from './deal-cards.mjs';
+
+// Since we are in ESM scope, we don't have __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 type RoomDetails = {
   w?: string;
@@ -16,7 +22,7 @@ const server = new Server(
     subprotocol: '1.0.0',
     supports: '1.x',
     host: '0.0.0.0',
-    fileUrl: import.meta.url,
+    root: __dirname,
   })
 );
 
