@@ -1,6 +1,6 @@
 {
   "name": "bchess",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "description": "Small description for bchess goes here",
   "repository": "",
@@ -24,7 +24,8 @@
     "logux": "node ./lib-dist/app.mjs",
     "logux:build": "tsc -p ./lib/tsconfig.json",
     "logux:watch": "tsm lib/app.mts",
-    "tailwind": "yarn tailwindcss -i ./app/styles/tailwind.css -o ./public/tailwind.css --watch"
+    "tailwind": "yarn tailwindcss -i ./app/styles/tailwind.css -o ./public/tailwind.css --watch",
+    "release": "standard-version"
   },
   "volta": {
     "node": "16.13.0",
@@ -117,6 +118,7 @@
     "prettier": "^2.5.1",
     "qunit": "^2.17.2",
     "qunit-dom": "^2.0.0",
+    "standard-version": "^9.3.2",
     "svg-inline-loader": "^0.8.2",
     "svgo-loader": "^3.0.0",
     "tailwindcss": "^3.0.18",
