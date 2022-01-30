@@ -22,9 +22,9 @@
           Light
         </dt>
         <dd class='ml-2 flex justify-between items-center w-full'>
-          {{this.roomDetails.w}}
+          {{this.gameDetails.w}}
 
-          {{#if (eq this.me this.roomDetails.w)}}
+          {{#if (eq this.me this.gameDetails.w)}}
             <span class='rounded-lg py-1 px-2 bg-green-700 text-white'>
               Me
             </span>
@@ -42,8 +42,8 @@
         </dt>
         <dd
           class='ml-2 flex justify-between items-center w-full'
-        >{{this.roomDetails.b}}
-          {{#if (eq this.me this.roomDetails.b)}}
+        >{{this.gameDetails.b}}
+          {{#if (eq this.me this.gameDetails.b)}}
             <span class='rounded-lg py-1 px-2 bg-green-700 text-white'>
               Me
             </span>

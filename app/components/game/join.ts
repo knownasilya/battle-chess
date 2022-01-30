@@ -26,7 +26,7 @@ export default class JoinGame extends Component<JoinGameArgs> {
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
-    this.channel.globalSync('game/JOIN', { id: this.args.gameId, ...data });
+    this.channel.globalSync('game/JOIN', { gameId: this.args.gameId, ...data });
     form.reset();
   };
 }

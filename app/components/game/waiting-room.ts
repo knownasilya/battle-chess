@@ -19,6 +19,13 @@ export default class WaitingRoom extends Component<WaitingRoomArgs> {
   @sync('DETAILS', { local: true })
   declare gameDetails?: Game;
 
+  constructor(owner: object, args: any) {
+    super(owner, args);
+    this.channel.type('PLAY', () => {
+      this.router.transitionTo('game.play', this.args.gameId);
+    });
+  }
+
   get hasOpponent() {
     return this.gameDetails?.w && this.gameDetails.b;
   }
@@ -31,6 +38,6 @@ export default class WaitingRoom extends Component<WaitingRoomArgs> {
   );
 
   play = () => {
-    this.channel.sync('PLAY');
+    this.channel.globalSync('game/PLAY', { gameId: this.args.gameId });
   };
 }

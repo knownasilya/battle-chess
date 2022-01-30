@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import dealCards from './deal-cards.mjs';
 import shortUUID from 'short-uuid';
-import { Game, RoomDetails, Side, User } from 'shared/index.js';
+import { Game, Side, User } from 'shared/index.js';
 
 // Since we are in ESM scope, we don't have __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -29,12 +29,8 @@ server.auth(({ userId }) => {
   return env === 'development';
 });
 
-const rooms: string[] = [];
 const games: Game[] = [];
 const users: User[] = [];
-const roomAccess: {
-  [K in string]: RoomDetails;
-} = {};
 
 const findGameOrThrow = (id: string) => {
   const game = games.find((g) => g.id === id);
@@ -54,20 +50,6 @@ server.channel('foyer', {
   async load() {
     // Load initial state when client subscribing to the channel.
     // You can use any database.
-    return { type: 'foyer/LIST_ROOMS', payload: rooms };
-  },
-});
-
-server.type('foyer/LIST_ROOMS', {
-  access() {
-    return true;
-  },
-  resend() {
-    return 'foyer';
-  },
-  async process(ctx) {
-    // noop
-    ctx.sendBack({ type: 'foyer/LIST_ROOMS', payload: rooms });
   },
 });
 
@@ -98,7 +80,7 @@ server.type<{ type: string; payload: { name: string } }>('foyer/START_GAME', {
       user.name = action.payload.name;
     }
 
-    ctx.sendBack({ type: 'foyer/GAME_CREATED', payload: { id } });
+    ctx.sendBack({ type: 'foyer/GAME_CREATED', payload: { gameId: id } });
   },
 });
 
@@ -116,106 +98,95 @@ server.channel<{ id: string }>('game/:id', {
 
   async load(ctx) {
     const game = games.find((game) => game.id === ctx.params.id);
-    return { type: `game/${ctx.params.id}/DETAILS`, payload: game };
+    return {
+      type: `game/${ctx.params.id}/DETAILS`,
+      payload: { ...game, cards: dealCards() },
+    };
   },
 });
 
-server.type<
-  { type: string; payload: { id: string; name: string } },
-  { test: boolean }
->('game/JOIN', {
-  access(ctx, action) {
-    const game = games.find((g) => g.id === action.payload.id);
+server.type<{ type: string; payload: { gameId: string; name: string } }>(
+  'game/JOIN',
+  {
+    access(ctx, action) {
+      const game = games.find((g) => g.id === action.payload.gameId);
 
-    if (!game || (game?.b && game?.w)) {
+      if (!game || (game?.b && game?.w)) {
+        return false;
+      }
+
+      return true;
+    },
+    resend(ctx, action) {
+      return `game/${action.payload.gameId}`;
+    },
+    async process(ctx, action) {
+      const game = games.find((g) => g.id === action.payload.gameId);
+
+      if (!game) {
+        return;
+      }
+
+      const { yours, opponents } = getSides(ctx, game);
+      console.log({ yours, opponents, game, userId: ctx.userId });
+      game[yours] = ctx.userId;
+
+      ctx.sendBack({
+        type: `game/${action.payload.gameId}/JOINED`,
+      });
+
+      server.log.add(
+        {
+          type: `game/${action.payload.gameId}/DETAILS`,
+          payload: game,
+        },
+        { channel: `game/${action.payload.gameId}` }
+      );
+    },
+  }
+);
+
+server.type<{ type: string; payload: { gameId: string } }>('game/PLAY', {
+  access(ctx, action) {
+    const game = games.find((g) => g.id === action.payload.gameId);
+
+    if (!game || !game?.b || !game?.w) {
       return false;
     }
 
     return true;
   },
   resend(ctx, action) {
-    return `game/${action.payload.id}`;
+    return `game/${action.payload.gameId}`;
   },
   async process(ctx, action) {
-    const game = games.find((g) => g.id === action.payload.id);
-
-    if (!game) {
-      return;
-    }
-
-    const { yours, opponents } = getSides(ctx, game);
-    console.log({ yours, opponents, game, userId: ctx.userId });
-    game[yours] = ctx.userId;
-
-    ctx.sendBack({
-      type: `game/${action.payload.id}/JOINED`,
-    });
-
     server.log.add(
       {
-        type: `game/${action.payload.id}/DETAILS`,
-        payload: game,
+        type: `game/${action.payload.gameId}/PLAY`,
       },
-      { channel: `game/${action.payload.id}` }
+      { channel: `game/${action.payload.gameId}` }
     );
-  },
-});
-
-server.channel<{ id: string }>('room/:id', {
-  access() {
-    return true;
-  },
-  async load(ctx) {
-    const id = ctx.params.id;
-
-    if (!roomAccess[id]) {
-      roomAccess[id] = {
-        b: undefined,
-        w: undefined,
-        turn: 'w',
-        fen: undefined,
-      };
-    }
-
-    if (!roomAccess[id].w) {
-      roomAccess[id].w = ctx.userId;
-    } else if (!roomAccess[id].b && roomAccess[id].w !== ctx.userId) {
-      roomAccess[id].b = ctx.userId;
-    }
-
-    return {
-      type: `room/ENTERED`,
-      payload: { ...roomAccess[id], cards: dealCards() },
-    };
-  },
-});
-
-server.type('room/ENTERED', {
-  access() {
-    return true;
-  },
-  resend(ctx, action) {
-    return `room`;
-  },
-  async process(ctx, action) {
-    // noop
-    // test
   },
 });
 
 server.type<{
   type: string;
-  payload: { fen: string; roomId: string; move: { from: string; to: string } };
-}>('room/MOVE_PIECE', {
+  payload: { fen: string; gameId: string; move: { from: string; to: string } };
+}>('game/MOVE_PIECE', {
   access(ctx, action) {
-    const room = roomAccess[action.payload.roomId];
-    console.log(room);
-    if (!room) {
+    let game;
+
+    try {
+      game = findGameOrThrow(action.payload.gameId);
+    } catch (e) {
+      console.error(e);
       return false;
     }
 
-    const isDark = room.b === ctx.userId;
-    const isLight = room.w === ctx.userId;
+    console.log(game);
+
+    const isDark = game.b === ctx.userId;
+    const isLight = game.w === ctx.userId;
     const isPlayer = isLight || isDark;
 
     console.log({ isDark, isLight, isPlayer });
@@ -224,21 +195,21 @@ server.type<{
       return false;
     }
 
-    const turn = getCurrentTurn(room, ctx.userId);
+    const { yours } = getSides(ctx, game);
 
-    return (turn === 'w' && isLight) || (turn === 'b' && isDark);
+    return (yours === 'w' && isLight) || (yours === 'b' && isDark);
   },
   resend(ctx, action) {
-    return `room/${action.payload.roomId}`;
+    return `game/${action.payload.gameId}`;
   },
   async process(ctx, action) {
-    const room = roomAccess[action.payload.roomId];
+    const game = findGameOrThrow(action.payload.gameId);
 
-    if (room) {
-      room.fen = action.payload.fen;
+    if (game) {
+      game.fen = action.payload.fen;
     }
 
-    const opponentsId = getOpponentsId(room, ctx.userId);
+    const opponentsId = getOpponentsUserId(ctx, game);
 
     if (!opponentsId) {
       return;
@@ -246,20 +217,24 @@ server.type<{
 
     server.log.add(
       {
-        type: 'room/TURN_FINISHED',
-        payload: { move: action.payload.move, fen: room.fen },
+        type: 'game/TURN_FINISHED',
+        payload: {
+          move: action.payload.move,
+          fen: game.fen,
+          gameId: action.payload.gameId,
+        },
       },
       { users: [opponentsId] }
     );
   },
 });
 
-server.type('room/TURN_FINISHED', {
+server.type('game/TURN_FINISHED', {
   access() {
     return true;
   },
   resend(ctx, action) {
-    return `room`;
+    return `game/${action.payload.gameId}`;
   },
   async process(ctx, action) {
     // noop
@@ -268,29 +243,6 @@ server.type('room/TURN_FINISHED', {
 });
 
 server.listen();
-
-function getOpponentsId(room: RoomDetails, currentUserId: string) {
-  if (room.w === currentUserId) {
-    return room.b;
-  }
-
-  if (room.b === currentUserId) {
-    return room.w;
-  }
-}
-
-function getCurrentTurn(
-  room: RoomDetails,
-  currentUserId: string
-): Side | undefined {
-  if (currentUserId === room.b) {
-    return 'b';
-  } else if (currentUserId === room.w) {
-    return 'w';
-  }
-
-  return undefined;
-}
 
 function blackOrWhite(): Side {
   const num = rand();

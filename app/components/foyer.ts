@@ -11,11 +11,14 @@ export default class Foyer extends Component {
 
   constructor(owner: object, args: any) {
     super(owner, args);
-    this.channel.globalType<{ id: string }>('foyer/GAME_CREATED', (action) => {
-      const { id } = action.payload;
+    this.channel.globalType<{ gameId: string }>(
+      'foyer/GAME_CREATED',
+      (action) => {
+        const { gameId } = action.payload;
 
-      this.router.transitionTo('game.waiting-room', id);
-    });
+        this.router.transitionTo('game.waiting-room', gameId);
+      }
+    );
   }
 
   addRoom = (e: SubmitEvent) => {

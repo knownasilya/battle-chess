@@ -5,32 +5,26 @@ import { Channel } from 'bchess/services/core';
 import { useResource } from 'ember-resources';
 import * as Chess from 'chess.js';
 import { Card } from 'bchess/utils/cards';
+import { Game, Side } from 'shared';
 
 interface GameArgs {
-  roomId: string;
+  gameId: string;
 }
 
 export type ChessBoard = ({
   type: Chess.PieceType;
-  color: 'b' | 'w';
+  color: Side;
 } | null)[][];
 
-export interface RoomDetails {
-  w: string;
-  b: string;
-  fen?: string;
-  turn: 'w' | 'b';
-}
-
-export default class Game extends Component<GameArgs> {
-  channel = useResource(this, Channel, () => [`room/${this.args.roomId}`]);
+export default class PlayGame extends Component<GameArgs> {
+  channel = useResource(this, Channel, () => [`game/${this.args.gameId}`]);
   chess: Chess.ChessInstance;
 
   @tracked board: ChessBoard;
-  @tracked turn: 'w' | 'b' = 'w';
+  @tracked turn: Side = 'w';
   @tracked cards?: Card[];
   @tracked cardInPlay?: Card;
-  @tracked roomDetails?: RoomDetails;
+  @tracked gameDetails?: Game;
   @tracked selectedSquare?: Chess.Square = undefined;
   @tracked hoveredSquare?: Chess.Square = undefined;
   @tracked highlightedSquares?: Chess.Square[] = undefined;
@@ -41,23 +35,20 @@ export default class Game extends Component<GameArgs> {
     this.chess = new Chess();
     this.board = this.chess.board();
 
-    this.channel.globalType<RoomDetails & { cards: Card[] }>(
-      'room/ENTERED',
-      (action) => {
-        const { cards, ...roomDetails } = action.payload;
+    this.channel.type<Game & { cards: Card[] }>('DETAILS', (action) => {
+      const { cards, ...roomDetails } = action.payload;
 
-        if (roomDetails.fen) {
-          this.chess.load(roomDetails.fen);
-          this.updateBoard();
-        }
-
-        this.cards = cards;
-        this.roomDetails = roomDetails;
+      if (roomDetails.fen) {
+        this.chess.load(roomDetails.fen);
+        this.updateBoard();
       }
-    );
 
-    this.channel.globalType<{ move?: Chess.ShortMove; fen?: string }>(
-      'room/TURN_FINISHED',
+      this.cards = cards;
+      this.gameDetails = roomDetails;
+    });
+
+    this.channel.type<{ move?: Chess.ShortMove; fen?: string }>(
+      'TURN_FINISHED',
       (action) => {
         const move = action.payload.move;
 
@@ -77,24 +68,24 @@ export default class Game extends Component<GameArgs> {
       }
     });
 
-    this.channel.globalType<{ move?: Chess.ShortMove; fen?: string }>(
-      'room/MOVE_PIECE',
+    this.channel.type<{ move?: Chess.ShortMove; fen?: string }>(
+      'MOVE_PIECE',
       (action) => this.updateAfterMove(action.payload.move, action.payload.fen)
     );
   }
 
   get me() {
-    return window.location.search.replace('?', '');
+    return window.sessionStorage.getItem('userId');
   }
 
   get isMyTurn() {
-    if (!this.roomDetails) {
+    if (!this.gameDetails) {
       return false;
     }
 
-    if (this.turn === 'b' && this.roomDetails.b === this.me) {
+    if (this.turn === 'b' && this.gameDetails.b === this.me) {
       return true;
-    } else if (this.turn === 'w' && this.roomDetails.w === this.me) {
+    } else if (this.turn === 'w' && this.gameDetails.w === this.me) {
       return true;
     }
 
@@ -136,8 +127,8 @@ export default class Game extends Component<GameArgs> {
         }
       }
 
-      this.channel.globalSync('room/MOVE_PIECE', {
-        roomId: this.args.roomId,
+      this.channel.globalSync('game/MOVE_PIECE', {
+        gameId: this.args.gameId,
         fen: this.chess.fen(),
       });
       this.selectedSquare = undefined;
@@ -160,8 +151,8 @@ export default class Game extends Component<GameArgs> {
       }
 
       this.chess.move(move);
-      this.channel.globalSync('room/MOVE_PIECE', {
-        roomId: this.args.roomId,
+      this.channel.globalSync('game/MOVE_PIECE', {
+        gameId: this.args.gameId,
         fen: this.chess.fen(),
         move,
       });
