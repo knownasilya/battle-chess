@@ -47,8 +47,8 @@ export default class PlayGame extends Component<GameArgs> {
       this.gameDetails = roomDetails;
     });
 
-    this.channel.type<{ move?: Chess.ShortMove; fen?: string }>(
-      'TURN_FINISHED',
+    this.channel.globalType<{ move?: Chess.ShortMove; fen?: string }>(
+      'game/TURN_FINISHED',
       (action) => {
         const move = action.payload.move;
 
