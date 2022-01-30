@@ -11,5 +11,6 @@ Router.map(function () {
   this.route('game', { path: 'game/:id' }, function () {
     this.route('waiting-room');
     this.route('play');
+    this.route('join');
   });
 });

@@ -11,8 +11,8 @@
     "baseUrl": ".",
     "skipLibCheck": true,
     "paths": {
-      "*": ["node_modules/*", "types/*"]
+      "*": ["node_modules/*", "../types/*"]
     }
   },
-  "include": ["*"]
+  "include": ["*", "../types/**/*"]
 }

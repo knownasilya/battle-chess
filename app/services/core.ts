@@ -68,14 +68,14 @@ export class Channel extends Resource {
     this.core.local(`${this.channel}/${type}`, payload);
   }
 
-  type(
+  type<T = unknown>(
     type: string,
-    listener: ClientActionListener<{ type: string; payload?: unknown }>
+    listener: ClientActionListener<{ type: string; payload: T }>
   ) {
     this.core.client.type(`${this.channel}/${type}`, listener);
   }
 
-  globalType<T>(
+  globalType<T = unknown>(
     type: string,
     listener: ClientActionListener<{ type: string; payload: T }>
   ) {

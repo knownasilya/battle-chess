@@ -1,7 +1,9 @@
 import Route from '@ember/routing/route';
 
-export default class Game extends Route.extend({
-  // anything which *must* be merged to prototype here
-}) {
+export type Params = {
+  id: string;
+};
+
+export default class Game extends Route {
   // normal class body definition here
 }

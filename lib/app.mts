@@ -2,17 +2,12 @@ import { Server } from '@logux/server';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import dealCards from './deal-cards.mjs';
+import shortUUID from 'short-uuid';
+import { Game, RoomDetails, User } from 'shared/index.js';
 
 // Since we are in ESM scope, we don't have __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-type RoomDetails = {
-  w?: string;
-  b?: string;
-  turn: 'b' | 'w';
-  fen?: string;
-};
 
 // eslint-disable-next-line no-undef
 const env = process.env.NODE_ENV || 'development';
@@ -26,42 +21,20 @@ const server = new Server(
   })
 );
 
-server.auth(() => {
+server.auth(({ userId }) => {
+  if (!users.find((user) => user.id === userId)) {
+    users.push({ id: userId });
+  }
   // Allow only local users until we will have a proper authentication
   return env === 'development';
 });
 
-let count = 0;
 const rooms: string[] = [];
+const games: Game[] = [];
+const users: User[] = [];
 const roomAccess: {
   [K in string]: RoomDetails;
 } = {};
-
-server.channel('counter', {
-  access() {
-    // Access control is mandatory
-    return true;
-  },
-  async load() {
-    // Load initial state when client subscribing to the channel.
-    // You can use any database.
-    return { type: 'counter/INC', payload: count };
-  },
-});
-
-server.type('counter/INC', {
-  access() {
-    return true;
-  },
-  resend() {
-    return 'counter';
-  },
-  async process() {
-    // Don’t forget to keep action atomic
-
-    count += 1;
-  },
-});
 
 server.channel('foyer', {
   access() {
@@ -88,7 +61,7 @@ server.type('foyer/LIST_ROOMS', {
   },
 });
 
-server.type('foyer/ADD_ROOM', {
+server.type<{ type: string; payload: { name: string } }>('foyer/START_GAME', {
   access() {
     return true;
   },
@@ -96,8 +69,66 @@ server.type('foyer/ADD_ROOM', {
     return 'foyer';
   },
   async process(ctx, action) {
-    rooms.push(action.payload);
-    ctx.sendBack({ type: 'foyer/LIST_ROOMS', payload: rooms });
+    // Create a new game
+    const id = shortUUID.generate().toString();
+    const side = blackOrWhite();
+    const turn = blackOrWhite();
+    const game: Game = {
+      id,
+      [side]: ctx.userId,
+      turn,
+    };
+
+    games.push(game);
+
+    // Update user
+    const user = users.find((u) => u.id === ctx.userId);
+
+    if (user) {
+      user.name = action.payload.name;
+    }
+
+    ctx.sendBack({ type: 'foyer/GAME_CREATED', payload: { id } });
+  },
+});
+
+server.channel<{ id: string }>('game/:id', {
+  access() {
+    return true;
+  },
+
+  async load(ctx) {
+    const game = games.find((game) => game.id === ctx.params.id);
+    return { type: `game/${ctx.params.id}/DETAILS`, payload: game };
+  },
+});
+
+server.type<
+  { type: string; payload: { id: string; name: string } },
+  { test: boolean }
+>('game/JOIN', {
+  access(ctx, action) {
+    const game = games.find((g) => g.id === action.payload.id);
+
+    if (!game || (game?.b && game?.w)) {
+      return false;
+    }
+
+    return true;
+  },
+  resend(ctx, action) {
+    return `game/${action.payload.id}`;
+  },
+  async process(ctx, action) {
+    const game = games.find((g) => g.id === action.payload.id);
+
+    if (!game) {
+      return;
+    }
+
+    ctx.sendBack({
+      type: `game/${action.payload.id}/JOINED`,
+    });
   },
 });
 
@@ -228,4 +259,13 @@ function getCurrentTurn(
   } else if (currentUserId === room.w) {
     return 'w';
   }
+}
+
+function blackOrWhite() {
+  const num = rand();
+  return num === 0 ? 'w' : 'b';
+}
+
+function rand() {
+  return Math.round(Math.random());
 }
