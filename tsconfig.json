@@ -27,5 +27,5 @@
       "*": ["types/*"]
     }
   },
-  "include": ["app/**/*", "tests/**/*", "types/**/*", "lib/**/*"]
+  "include": ["app/**/*", "tests/**/*", "types/**/*"]
 }

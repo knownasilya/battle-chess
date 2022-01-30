@@ -15,10 +15,11 @@ export default class WaitingRoom extends Component<WaitingRoomArgs> {
 
   channel = useResource(this, Channel, () => [`game/${this.args.gameId}`]);
 
-  @sync('DETAILS')
+  @sync('DETAILS', { local: true })
   declare details?: Game;
 
   get opponentHere() {
+    console.log(this.details);
     return this.details?.w && this.details.b;
   }
 }
