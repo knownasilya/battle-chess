@@ -19,6 +19,7 @@ RUN adduser -S logux -u 1001
 
 # Copy all files
 COPY lib/ ./lib
+COPY types/ ./types
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/package.json ./package.json
 
