@@ -3,7 +3,6 @@ import { Channel } from 'bchess/services/core';
 import { inject as service } from '@ember/service';
 import { useResource } from 'ember-resources';
 import RouterService from '@ember/routing/router-service';
-import { Game } from 'shared';
 
 interface JoinGameArgs {
   gameId: string;

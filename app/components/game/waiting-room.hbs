@@ -1,5 +1,9 @@
-{{#if this.opponentHere}}
-  Ready!
+{{#if this.hasOpponent}}
+  Ready to start!
+  <button type='button' {{on 'click' this.play}}>Play</button>
 {{else}}
   Waiting for opponent to join..
+  <br />
+  Send them this link
+  <LinkTo @route='game.join' @model={{@gameId}}>{{this.joinUrl}}</LinkTo>
 {{/if}}
