@@ -74,6 +74,26 @@ export default class PlayGame extends Component<GameArgs> {
     );
   }
 
+  get you() {
+    const side: Side = this.gameDetails?.b === this.me ? 'b' : 'w';
+
+    return {
+      side,
+      id: this.me,
+      name: this.me,
+    };
+  }
+
+  get opponent() {
+    const side: Side = this.gameDetails?.b === this.me ? 'w' : 'b';
+
+    return {
+      side,
+      id: this.gameDetails?.[side],
+      name: this.gameDetails?.[side],
+    };
+  }
+
   get me() {
     return window.sessionStorage.getItem('userId');
   }

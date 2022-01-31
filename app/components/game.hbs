@@ -1,3 +1,60 @@
+<div class='game-container p-4 gap-4'>
+  <div
+    class='opponent rounded shadow-md flex items-start p-2 overflow-hidden
+      {{if (eq this.turn this.opponent.side) "bg-green-400" "bg-gray-200"}}'
+  >
+    <div class='flex items-center gap-2'>
+
+      <Piece @type='n' @color={{this.opponent.side}} />
+      {{this.opponent.name}}
+    </div>
+  </div>
+  <div class='opponents-hand flex'>
+    <Opponents::CardHand @cards={{array 0 1 2 3}} />
+  </div>
+  <div class='opponents-graveyard'>
+    grave
+  </div>
+  <div
+    class='you p-2 rounded shadow-md flex items-start overflow-hidden
+      {{if (eq this.turn this.you.side) "bg-green-400" "bg-gray-200"}}'
+  >
+    <div class='flex items-center gap-2'>
+      <Piece @type='n' @color={{this.you.side}} />
+      {{this.you.name}}
+    </div>
+  </div>
+  <div class='your-graveyard'>
+    grave
+  </div>
+  <div class='your-hand flex'>
+    <CardHand
+      @cards={{this.cards}}
+      @playCard={{fn (mut this.cardInPlay)}}
+      @cardInPlay={{this.cardInPlay}}
+    />
+  </div>
+  <div class='board-container flex'>
+    <Board
+      class='board'
+      @board={{this.board}}
+      @orientation='white'
+      @selectedSquare={{this.selectedSquare}}
+      @hoveredSquare={{this.hoveredSquare}}
+      @highlightedSquares={{this.highlightedSquares}}
+      @selectSquare={{this.selectSquare}}
+    />
+  </div>
+  <div class='selected-card'>
+    card
+  </div>
+  <div class='timer bg-gray-100 rounded shadow-md p-2'>
+    Turn
+    {{this.turn}}
+    <p class='text-gray-700'>{{this.hoveredSquare}}</p>
+  </div>
+</div>
+{{!-- 
 <div
   class='p-4 grid gap-4 sm:grid-cols-2 sm:grid-rows-1 grid-cols-1 grid-rows-2'
 >
@@ -55,12 +112,12 @@
     <p class='mt-2 text-gray-700'>{{this.hoveredSquare}}</p>
 
   </div>
-</div>
+</div> --}}
 
-<div class='p-4 flex justify-center'>
+{{!-- <div class='p-4 flex justify-center'>
   <CardHand
     @cards={{this.cards}}
     @playCard={{fn (mut this.cardInPlay)}}
     @cardInPlay={{this.cardInPlay}}
   />
-</div>
+</div> --}}

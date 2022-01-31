@@ -1,7 +1,7 @@
-<li class='grid gap-4 grid-cols-5'>
+<li class='grid gap-4 grid-cols-4' ...attributes>
   {{#each @cards as |card|}}
     <li
-      class='rounded shadow-md w-44 h-64 flex flex-col items-stretch justify-between hover:shadow-lg
+      class='rounded shadow-md w-full h-full flex flex-col items-stretch justify-between hover:shadow-lg
         {{if
           (eq @cardInPlay card)
           "border-indigo-700 border-2"
@@ -9,7 +9,7 @@
         }}'
     >
       <div
-        class='h-1/2 text-center flex flex-col justify-center text-white bg-orange-900'
+        class='your-card__bg h-16 text-center flex flex-col justify-center text-white bg-orange-900'
       >
         {{card.name}}
       </div>
