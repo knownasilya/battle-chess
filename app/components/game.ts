@@ -28,6 +28,7 @@ export default class PlayGame extends Component<GameArgs> {
   @tracked selectedSquare?: Chess.Square = undefined;
   @tracked hoveredSquare?: Chess.Square = undefined;
   @tracked highlightedSquares?: Chess.Square[] = undefined;
+  @tracked isShowingPieceSelection = false;
 
   constructor(owner: object, args: GameArgs) {
     super(owner, args);
@@ -129,6 +130,7 @@ export default class PlayGame extends Component<GameArgs> {
           let piece = undefined;
 
           while (piece === undefined || piece === 'k' || piece === 'q') {
+            this.isShowingPieceSelection = true;
             piece = window.prompt(
               'Which piece (except for royalty)?'
             ) as Chess.PieceType;

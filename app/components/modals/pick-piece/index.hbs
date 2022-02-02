@@ -1,0 +1,20 @@
+<Modal @isOpen={{true}} as |m|>
+  <m.Header>Pick A Piece</m.Header>
+
+  <m.Body class='flex flex-col gap-4'>
+    <p>Choose one of the pieces below.</p>
+
+    <div class='flex gap-4'>
+      <Piece @type='n' @color='b' />
+      <Piece @type='b' @color='b' />
+      <Piece @type='p' @color='b' />
+      <Piece @type='r' @color='b' />
+    </div>
+  </m.Body>
+
+  <m.Footer class='flex justify-start'>
+    <Button @appearance='minimal'>
+      Cancel
+    </Button>
+  </m.Footer>
+</Modal>
