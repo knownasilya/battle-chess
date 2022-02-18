@@ -1,9 +1,23 @@
-{{#if this.hasOpponent}}
-  Ready to start!
-  <button type='button' {{on 'click' this.play}}>Play</button>
-{{else}}
-  Waiting for opponent to join..
-  <br />
-  Send them this link
-  <LinkTo @route='game.join' @model={{@gameId}}>{{this.joinUrl}}</LinkTo>
-{{/if}}
+<div class='flex flex-col items-center gap-8 mt-8'>
+  <h1 class='text-4xl font-thin text-slate-800'>Battle Chess</h1>
+
+  <div class='flex flex-col justify-center gap-4'>
+    {{#if this.hasOpponent}}
+      <h2 class='text-2xl font-thin text-slate-80'>Ready to start!</h2>
+
+      <p>{{this.gameDetails.w}} vs {{this.gameDetails.b}}</p>
+
+      <Button @intent='primary' {{on 'click' this.play}}>Play</Button>
+    {{else}}
+      <h2 class='text-2xl font-thin text-slate-80'>Waiting for opponent to
+        join...</h2>
+
+      Send them this link
+      <LinkTo
+        class='text-blue-700 underline'
+        @route='game.join'
+        @model={{@gameId}}
+      >{{this.joinUrl}}</LinkTo>
+    {{/if}}
+  </div>
+</div>

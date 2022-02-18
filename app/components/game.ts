@@ -144,6 +144,14 @@ export default class PlayGame extends Component<GameArgs> {
           this.chess.put({ type: piece, color: this.turn }, square);
           break;
         }
+        case 'promote-pawn': {
+          if (!piece || piece.type !== 'p' || piece.color !== this.turn) {
+            window.alert('Please choose a pawn');
+            return;
+          }
+
+          break;
+        }
         default: {
           alert('unimplemented');
         }

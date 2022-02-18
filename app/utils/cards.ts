@@ -6,12 +6,12 @@ const cards = [
   //     'Skip the opponents next turn, effectively giving you two turns.',
   //   afterPlay: 'continue-turn',
   // },
-  // {
-  //   id: 'promote-pawn',
-  //   name: 'Promote Pawn',
-  //   description: 'Promote a pawn of your choosing.',
-  //   afterPlay: 'end-turn',
-  // },
+  {
+    id: 'promote-pawn',
+    name: 'Promote Pawn',
+    description: 'Promote a pawn of your choosing.',
+    afterPlay: 'end-turn',
+  },
   {
     id: 'add-piece',
     name: 'Backup',
@@ -26,7 +26,7 @@ const cards = [
     afterPlay: 'end-turn',
     weight: 0.8,
   },
-];
+] as const;
 
 export default cards;
 

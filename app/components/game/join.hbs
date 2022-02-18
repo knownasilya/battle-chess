@@ -1,6 +1,23 @@
-<form {{on 'submit' this.joinGame}}>
-  <label for='join-game-name'>Your Name</label>
-  <input name='name' id='join-game-name' placeholder='Mary Poppins' />
+<div class='flex flex-col items-center gap-8 mt-8'>
+  <h1 class='text-4xl font-thin text-slate-800'>Battle Chess</h1>
 
-  <button type='submit'>Continue</button>
-</form>
+  <div class='flex flex-col justify-center gap-4'>
+    <h2 class='text-2xl font-thin text-slate-80'>Enter Your Details</h2>
+
+    <form class='flex flex-col gap-2' {{on 'submit' this.joinGame}}>
+      <label for='join-game-name' class='block'>Your Name</label>
+
+      <div class='flex gap-4'>
+        <input
+          name='name'
+          id='join-game-name'
+          placeholder='Mary Poppins'
+          class='border rounded p-3'
+          required={{true}}
+        />
+
+        <Button @intent='primary' type='submit'>Continue</Button>
+      </div>
+    </form>
+  </div>
+</div>
