@@ -120,6 +120,7 @@ export default class PlayGame extends Component<GameArgs> {
     this.cardInPlay = card;
 
     switch (card.id) {
+      case 'promote-pawn':
       case 'add-piece': {
         this.isShowingPieceSelection = true;
       }
@@ -162,10 +163,20 @@ export default class PlayGame extends Component<GameArgs> {
           break;
         }
         case 'promote-pawn': {
-          if (!piece || piece.type !== 'p' || piece.color !== this.turn) {
+          if (
+            !this.cardNewPiece ||
+            !piece ||
+            piece.type !== 'p' ||
+            piece.color !== this.turn
+          ) {
             window.alert('Please choose a pawn');
             return;
           }
+
+          this.chess.remove(square);
+          this.chess.put({ type: this.cardNewPiece, color: this.turn }, square);
+
+          this.cardNewPiece = undefined;
 
           break;
         }
