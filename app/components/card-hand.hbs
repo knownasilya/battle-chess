@@ -1,26 +1,14 @@
-<li class='grid gap-4 grid-cols-4' ...attributes>
+<ul class='grid gap-4 grid-cols-4' ...attributes>
   {{#each @cards as |card|}}
-    <li
-      class='rounded shadow-md w-full h-full flex flex-col items-stretch justify-between hover:shadow-lg
-        {{if
-          (eq @cardInPlay card)
-          "border-indigo-700 border-2"
-          "border-gray-500 border"
-        }}'
-    >
-      <div
-        class='your-card__bg h-16 text-center flex flex-col justify-center text-white bg-orange-900'
-      >
-        {{card.name}}
-      </div>
-
-      <p class='p-4'>{{card.description}}</p>
-
-      <button
-        class='mb-4'
-        type='button'
-        {{on 'click' (fn @playCard card)}}
-      >Play</button>
+    <li>
+      <Card @card={{card}} @isInPlay={{eq @cardInPlay card}}>
+        <button
+          class='mb-4'
+          type='button'
+          {{on 'click' (fn @playCard card)}}
+        >Play</button>
+      </Card>
     </li>
+
   {{/each}}
-</li>
+</ul>

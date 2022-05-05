@@ -52,7 +52,18 @@
   </div>
 
   <div class='selected-card'>
-    card
+    <strong>Card in Play</strong>
+    <div>
+      {{#if this.cardInPlay}}
+        <Card @card={{this.cardInPlay}}>
+          <button
+            class='mb-4'
+            type='button'
+            {{on 'click' (fn (mut this.cardInPlay) undefined)}}
+          >Cancel</button>
+        </Card>
+      {{/if}}
+    </div>
   </div>
 
   <div class='timer bg-gray-100 rounded shadow-md p-2'>
