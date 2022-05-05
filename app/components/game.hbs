@@ -34,7 +34,7 @@
   <div class='your-hand flex'>
     <CardHand
       @cards={{this.cards}}
-      @playCard={{fn (mut this.cardInPlay)}}
+      @playCard={{this.playCard}}
       @cardInPlay={{this.cardInPlay}}
     />
   </div>
@@ -130,5 +130,8 @@
 </div> --}}
 
 {{#if this.isShowingPieceSelection}}
-  <Modals::PickPiece />
+  <Modals::PickPiece
+    @onSelect={{this.selectNewCardPiece}}
+    @onCancel={{fn (mut this.isShowingPieceSelection) false}}
+  />
 {{/if}}

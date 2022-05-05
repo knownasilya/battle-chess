@@ -5,15 +5,26 @@
     <p>Choose one of the pieces below.</p>
 
     <div class='flex gap-4'>
-      <Piece @type='n' @color='b' />
-      <Piece @type='b' @color='b' />
-      <Piece @type='p' @color='b' />
-      <Piece @type='r' @color='b' />
+      <button type='button' {{on 'click' (fn @onSelect 'n')}}>
+        <Piece @type='n' @color='b' />
+      </button>
+
+      <button type='button' {{on 'click' (fn @onSelect 'b')}}>
+        <Piece @type='b' @color='b' />
+      </button>
+
+      <button type='button' {{on 'click' (fn @onSelect 'p')}}>
+        <Piece @type='p' @color='b' />
+      </button>
+
+      <button type='button' {{on 'click' (fn @onSelect 'r')}}>
+        <Piece @type='r' @color='b' />
+      </button>
     </div>
   </m.Body>
 
   <m.Footer class='flex justify-start'>
-    <Button @appearance='minimal'>
+    <Button @appearance='minimal' {{on 'click' @onCancel}}>
       Cancel
     </Button>
   </m.Footer>

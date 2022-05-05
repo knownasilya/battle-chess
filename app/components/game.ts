@@ -6,6 +6,7 @@ import { useResource } from 'ember-resources';
 import * as Chess from 'chess.js';
 import { Card } from 'bchess/utils/cards';
 import { Game, Side } from 'shared';
+import Piece from './piece';
 
 interface GameArgs {
   gameId: string;
@@ -19,6 +20,7 @@ export type ChessBoard = ({
 export default class PlayGame extends Component<GameArgs> {
   channel = useResource(this, Channel, () => [`game/${this.args.gameId}`]);
   chess: Chess.ChessInstance;
+  cardNewPiece?: Chess.PieceType;
 
   @tracked board: ChessBoard;
   @tracked turn: Side = 'w';
@@ -114,6 +116,23 @@ export default class PlayGame extends Component<GameArgs> {
   }
 
   @action
+  playCard(card: Card) {
+    this.cardInPlay = card;
+
+    switch (card.id) {
+      case 'add-piece': {
+        this.isShowingPieceSelection = true;
+      }
+    }
+  }
+
+  @action
+  selectNewCardPiece(piece: Chess.PieceType) {
+    this.cardNewPiece = piece;
+    this.isShowingPieceSelection = false;
+  }
+
+  @action
   selectSquare(piece: Chess.Piece | null, square: Chess.Square) {
     if (!this.isMyTurn) {
       return;
@@ -126,22 +145,14 @@ export default class PlayGame extends Component<GameArgs> {
           break;
         }
         case 'add-piece': {
-          // Canceling the prompt returns `null` and stops playing this card
-          let piece = undefined;
-
-          while (piece === undefined || piece === 'k' || piece === 'q') {
-            this.isShowingPieceSelection = true;
-            piece = window.prompt(
-              'Which piece (except for royalty)?'
-            ) as Chess.PieceType;
-          }
-
-          if (!piece) {
+          if (!this.cardNewPiece) {
             this.cardInPlay = undefined;
+            console.trace('no piece selected');
             return;
           }
 
-          this.chess.put({ type: piece, color: this.turn }, square);
+          this.chess.put({ type: this.cardNewPiece, color: this.turn }, square);
+          this.cardNewPiece = undefined;
           break;
         }
         case 'promote-pawn': {
