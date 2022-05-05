@@ -1,4 +1,10 @@
-<div class='grid grid-cols-2 gap-2'>
-  <button type='button' {{on 'click' this.startGame}}>Start Game</button>
-  <button type='button' {{on 'click' this.joinGame}}>Join Game</button>
+<div class='flex flex-col items-center gap-8 mt-8'>
+  <h1 class='text-4xl font-thin text-slate-800'>Battle Chess</h1>
+
+  <div class='flex justify-center'>
+    <div class='grid grid-cols-2 gap-4'>
+      <Button @intent='primary' {{on 'click' this.startGame}}>Start Game</Button>
+      <Button @appearance='outlined' {{on 'click' this.joinGame}}>Join Game</Button>
+    </div>
+  </div>
 </div>

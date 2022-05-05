@@ -6,6 +6,7 @@ import { useResource } from 'ember-resources';
 import * as Chess from 'chess.js';
 import { Card } from 'bchess/utils/cards';
 import { Game, Side } from 'shared';
+import Piece from './piece';
 
 interface GameArgs {
   gameId: string;
@@ -19,6 +20,7 @@ export type ChessBoard = ({
 export default class PlayGame extends Component<GameArgs> {
   channel = useResource(this, Channel, () => [`game/${this.args.gameId}`]);
   chess: Chess.ChessInstance;
+  cardNewPiece?: Chess.PieceType;
 
   @tracked board: ChessBoard;
   @tracked turn: Side = 'w';
@@ -28,6 +30,7 @@ export default class PlayGame extends Component<GameArgs> {
   @tracked selectedSquare?: Chess.Square = undefined;
   @tracked hoveredSquare?: Chess.Square = undefined;
   @tracked highlightedSquares?: Chess.Square[] = undefined;
+  @tracked isShowingPieceSelection = false;
 
   constructor(owner: object, args: GameArgs) {
     super(owner, args);
@@ -74,6 +77,26 @@ export default class PlayGame extends Component<GameArgs> {
     );
   }
 
+  get you() {
+    const side: Side = this.gameDetails?.b === this.me ? 'b' : 'w';
+
+    return {
+      side,
+      id: this.me,
+      name: this.me,
+    };
+  }
+
+  get opponent() {
+    const side: Side = this.gameDetails?.b === this.me ? 'w' : 'b';
+
+    return {
+      side,
+      id: this.gameDetails?.[side],
+      name: this.gameDetails?.[side],
+    };
+  }
+
   get me() {
     return window.sessionStorage.getItem('userId');
   }
@@ -93,6 +116,30 @@ export default class PlayGame extends Component<GameArgs> {
   }
 
   @action
+  playCard(card: Card) {
+    this.cardInPlay = card;
+
+    switch (card.id) {
+      case 'promote-pawn':
+      case 'add-piece': {
+        this.isShowingPieceSelection = true;
+      }
+    }
+  }
+
+  @action
+  selectNewCardPiece(piece: Chess.PieceType) {
+    this.cardNewPiece = piece;
+    this.isShowingPieceSelection = false;
+  }
+
+  @action
+  cancelNewCardPiece() {
+    this.isShowingPieceSelection = false;
+    this.cardInPlay = undefined;
+  }
+
+  @action
   selectSquare(piece: Chess.Piece | null, square: Chess.Square) {
     if (!this.isMyTurn) {
       return;
@@ -105,21 +152,32 @@ export default class PlayGame extends Component<GameArgs> {
           break;
         }
         case 'add-piece': {
-          // Canceling the prompt returns `null` and stops playing this card
-          let piece = undefined;
-
-          while (piece === undefined || piece === 'k' || piece === 'q') {
-            piece = window.prompt(
-              'Which piece (except for royalty)?'
-            ) as Chess.PieceType;
-          }
-
-          if (!piece) {
+          if (!this.cardNewPiece) {
             this.cardInPlay = undefined;
+            console.trace('no piece selected');
             return;
           }
 
-          this.chess.put({ type: piece, color: this.turn }, square);
+          this.chess.put({ type: this.cardNewPiece, color: this.turn }, square);
+          this.cardNewPiece = undefined;
+          break;
+        }
+        case 'promote-pawn': {
+          if (
+            !this.cardNewPiece ||
+            !piece ||
+            piece.type !== 'p' ||
+            piece.color !== this.turn
+          ) {
+            window.alert('Please choose a pawn');
+            return;
+          }
+
+          this.chess.remove(square);
+          this.chess.put({ type: this.cardNewPiece, color: this.turn }, square);
+
+          this.cardNewPiece = undefined;
+
           break;
         }
         default: {
