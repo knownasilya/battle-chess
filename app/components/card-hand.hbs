@@ -2,11 +2,13 @@
   {{#each @cards as |card|}}
     <li>
       <Card @card={{card}} @isInPlay={{eq @cardInPlay card}}>
-        <button
-          class='mb-4'
-          type='button'
-          {{on 'click' (fn @playCard card)}}
-        >Play</button>
+        {{#if @isMyTurn}}
+          <button
+            class='mb-4'
+            type='button'
+            {{on 'click' (fn @playCard card)}}
+          >Play</button>
+        {{/if}}
       </Card>
     </li>
 

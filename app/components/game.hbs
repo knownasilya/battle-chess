@@ -36,6 +36,7 @@
       @cards={{this.cards}}
       @playCard={{this.playCard}}
       @cardInPlay={{this.cardInPlay}}
+      @isMyTurn={{this.isMyTurn}}
     />
   </div>
 
@@ -143,6 +144,6 @@
 {{#if this.isShowingPieceSelection}}
   <Modals::PickPiece
     @onSelect={{this.selectNewCardPiece}}
-    @onCancel={{fn (mut this.isShowingPieceSelection) false}}
+    @onCancel={{this.cancelNewCardPiece}}
   />
 {{/if}}

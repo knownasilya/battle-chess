@@ -133,6 +133,12 @@ export default class PlayGame extends Component<GameArgs> {
   }
 
   @action
+  cancelNewCardPiece() {
+    this.isShowingPieceSelection = false;
+    this.cardInPlay = undefined;
+  }
+
+  @action
   selectSquare(piece: Chess.Piece | null, square: Chess.Square) {
     if (!this.isMyTurn) {
       return;
