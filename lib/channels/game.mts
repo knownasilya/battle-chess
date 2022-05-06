@@ -1,7 +1,7 @@
 import { Server } from '@logux/server';
-import dealCards from '../deal-cards.mjs';
 import { getOpponentsUserId, getSides } from '../utils.mjs';
-import { findGameOrThrow, games } from '../state.mjs';
+import { findGameOrThrow, games, hands } from '../state.mjs';
+import { Card } from 'shared';
 
 /**
  * Most of the logic for the game is here
@@ -21,9 +21,16 @@ export default function gameChannel(server: Server) {
 
     async load(ctx) {
       const game = games.find((game) => game.id === ctx.params.id);
+      if (!game) {
+        throw new Error(`Game with id ${ctx.params.id} doesn't exist`);
+      }
+
+      const { yours } = getSides(ctx, game);
+      const hand = hands.get(game);
+
       return {
         type: `game/${ctx.params.id}/DETAILS`,
-        payload: { ...game, cards: dealCards() },
+        payload: { ...game, cards: hand?.[yours] },
       };
     },
   });
@@ -98,6 +105,7 @@ export default function gameChannel(server: Server) {
       fen: string;
       gameId: string;
       move: { from: string; to: string };
+      cardIdPlayed?: Card['id'];
     };
   }>('game/MOVE_PIECE', {
     access(ctx, action) {
@@ -134,6 +142,17 @@ export default function gameChannel(server: Server) {
 
       if (game) {
         game.fen = action.payload.fen;
+        const { yours } = getSides(ctx, game);
+        const hand = hands.get(game);
+        const yourHand = hand?.[yours];
+
+        // Update your hand
+        if (yourHand && action.payload.cardIdPlayed) {
+          const newHand = yourHand.filter(
+            (card) => card.id !== action.payload.cardIdPlayed
+          );
+          hand[yours] = newHand;
+        }
       }
 
       const opponentsId = getOpponentsUserId(ctx, game);

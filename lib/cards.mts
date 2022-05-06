@@ -61,5 +61,3 @@ const cards = [
 ];
 
 export default cards;
-
-export type Card = typeof cards[number];

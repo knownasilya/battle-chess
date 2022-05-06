@@ -1,5 +1,6 @@
+import { Card } from 'shared';
 import weighted from 'weighted';
-import cards, { Card } from './cards.mjs';
+import cards from './cards.mjs';
 
 interface WeightedCards {
   [k: Card['id']]: number;

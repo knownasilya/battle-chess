@@ -1,3 +1,5 @@
+import cards from '../../lib/cards.mjs';
+
 export type Side = 'w' | 'b';
 
 export type RoomDetails = {
@@ -19,3 +21,5 @@ export type User = {
   id: string;
   name?: string;
 };
+
+export type Card = typeof cards[number];

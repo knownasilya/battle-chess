@@ -1,7 +1,8 @@
 import { Server } from '@logux/server';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { games, users } from './state.mjs';
+import { users } from './state.mjs';
+import foyerChannel from './channels/foyer.mjs';
 import gameChannel from './channels/game.mjs';
 
 // Since we are in ESM scope, we don't have __dirname
@@ -28,6 +29,7 @@ server.auth(({ userId }) => {
   return env === 'development';
 });
 
+foyerChannel(server);
 gameChannel(server);
 
 server.listen();

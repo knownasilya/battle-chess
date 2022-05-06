@@ -6,7 +6,6 @@ import { useResource } from 'ember-resources';
 import * as Chess from 'chess.js';
 import { Card } from 'bchess/utils/cards';
 import { Game, Side } from 'shared';
-import Piece from './piece';
 
 interface GameArgs {
   gameId: string;
@@ -188,6 +187,7 @@ export default class PlayGame extends Component<GameArgs> {
       this.channel.globalSync('game/MOVE_PIECE', {
         gameId: this.args.gameId,
         fen: this.chess.fen(),
+        cardIdPlayed: this.cardInPlay?.id,
       });
       this.selectedSquare = undefined;
       this.highlightedSquares = undefined;

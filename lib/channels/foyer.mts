@@ -2,7 +2,8 @@ import { Server } from '@logux/server';
 import shortUUID from 'short-uuid';
 import { Game } from 'shared';
 import { blackOrWhite } from '../utils.mjs';
-import { games, users } from '../state.mjs';
+import { games, hands, users } from '../state.mjs';
+import dealCards from '../deal-cards.mjs';
 
 /**
  * The foyer is the place you enter when you first open the app,
@@ -39,6 +40,7 @@ export default function foyerChannel(server: Server) {
         turn,
       };
 
+      hands.set(game, { w: dealCards(), b: dealCards() });
       games.push(game);
 
       // Update user
