@@ -1,7 +1,34 @@
 import { Card, Game, User } from 'shared';
+import {
+  Sequelize,
+  Model,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+  Optional,
+} from 'sequelize';
+
+const sequelize = new Sequelize('sqlite::memory:');
+
+interface UserModel
+  extends Model<
+    InferAttributes<UserModel>,
+    InferCreationAttributes<UserModel>
+  > {
+  // Some fields are optional when calling UserModel.create() or UserModel.build()
+  id: string;
+  name: CreationOptional<string>;
+}
+
+export const UserModel = sequelize.define<UserModel>('User', {
+  id: { type: DataTypes.STRING, primaryKey: true },
+  name: { type: DataTypes.STRING, allowNull: true },
+});
+
+UserModel.sync();
 
 export const games: Game[] = [];
-export const users: User[] = [];
 export const hands: Map<Game, { w: Card[]; b: Card[] }> = new Map();
 
 export const findGame = (id: string) => {
@@ -18,20 +45,4 @@ export const findGameOrThrow = (id: string) => {
   }
 
   return game;
-};
-
-export const findUser = (id: string) => {
-  const user = users.find((u) => u.id === id);
-
-  return user;
-};
-
-export const findUserOrThrow = (id: string) => {
-  const user = findUser(id);
-
-  if (!user) {
-    throw new Error(`User with ID {${id}} not found`);
-  }
-
-  return user;
 };

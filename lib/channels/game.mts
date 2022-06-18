@@ -3,10 +3,9 @@ import { getOpponentsUserId, getSides } from '../utils.mjs';
 import {
   findGame,
   findGameOrThrow,
-  findUser,
-  findUserOrThrow,
   games,
   hands,
+  UserModel,
 } from '../state.mjs';
 import { Card, Game } from 'shared';
 
@@ -34,7 +33,7 @@ export default function gameChannel(server: Server) {
 
       const { yours } = getSides(ctx, game);
       const hand = hands.get(game);
-      const usersInGame = getGameUsers(game);
+      const usersInGame = await getGameUsers(game);
 
       return {
         type: `game/${ctx.params.id}/DETAILS`,
@@ -60,10 +59,11 @@ export default function gameChannel(server: Server) {
       },
       async process(ctx, action) {
         const game = findGameOrThrow(action.payload.gameId);
-        const joiningUser = findUser(ctx.userId);
+        const joiningUser = await UserModel.findByPk(ctx.userId);
 
         if (joiningUser) {
           joiningUser.name = action.payload.name;
+          await joiningUser.save();
         }
 
         const { yours, opponents } = getSides(ctx, game);
@@ -74,7 +74,7 @@ export default function gameChannel(server: Server) {
           type: `game/${action.payload.gameId}/JOINED`,
         });
 
-        const usersInGame = getGameUsers(game);
+        const usersInGame = await getGameUsers(game);
 
         server.log.add(
           {
@@ -200,9 +200,11 @@ export default function gameChannel(server: Server) {
   });
 }
 
-function getGameUsers(game: Game) {
+async function getGameUsers(game: Game) {
   const userIds = [game.w, game.b].filter((id) => !!id) as string[];
-  const usersInGame = userIds.map((id) => findUser(id));
+  const usersInGame = await Promise.all(
+    userIds.map(async (id) => await UserModel.findByPk(id))
+  );
 
   return usersInGame;
 }

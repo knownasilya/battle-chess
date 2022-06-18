@@ -2,7 +2,7 @@ import { Server } from '@logux/server';
 import shortUUID from 'short-uuid';
 import { Game } from 'shared';
 import { blackOrWhite } from '../utils.mjs';
-import { games, hands, users } from '../state.mjs';
+import { games, hands, UserModel, users } from '../state.mjs';
 import dealCards from '../deal-cards.mjs';
 
 /**
@@ -44,10 +44,11 @@ export default function foyerChannel(server: Server) {
       games.push(game);
 
       // Update user
-      const user = users.find((u) => u.id === ctx.userId);
 
+      const user = await UserModel.findByPk(ctx.userId);
       if (user) {
         user.name = action.payload.name;
+        await user.save();
       }
 
       ctx.sendBack({ type: 'foyer/GAME_CREATED', payload: { gameId: id } });

@@ -1,7 +1,7 @@
 import { Server } from '@logux/server';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { users } from './state.mjs';
+import { UserModel } from './state.mjs';
 import foyerChannel from './channels/foyer.mjs';
 import gameChannel from './channels/game.mjs';
 
@@ -21,9 +21,10 @@ const server = new Server(
   })
 );
 
-server.auth(({ userId }) => {
-  if (!users.find((user) => user.id === userId)) {
-    users.push({ id: userId });
+server.auth(async ({ userId }) => {
+  const user = await UserModel.findByPk(userId);
+  if (!user) {
+    await UserModel.create({ id: userId });
   }
   // Allow only local users until we will have a proper authentication
   return env === 'development';
