@@ -30,7 +30,7 @@
   },
   "volta": {
     "node": "16.13.0",
-    "yarn": "1.22.17"
+    "yarn": "1.22.19"
   },
   "dependencies": {
     "@logux/server": "^0.10.8",
@@ -43,10 +43,10 @@
   "devDependencies": {
     "@ember/optional-features": "^2.0.0",
     "@ember/test-helpers": "^2.6.0",
-    "@frontile/buttons": "^0.13.1",
-    "@frontile/core": "^0.13.1",
-    "@frontile/notifications": "^0.13.1",
-    "@frontile/overlays": "^0.13.1",
+    "@frontile/buttons": "^0.14.0",
+    "@frontile/core": "^0.14.0",
+    "@frontile/notifications": "^0.14.0",
+    "@frontile/overlays": "^0.14.0",
     "@glimmer/component": "^1.0.4",
     "@glimmer/tracking": "^1.0.4",
     "@logux/actions": "^0.2.1",
