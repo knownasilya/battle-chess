@@ -59,7 +59,14 @@ export default class PlayGame extends Component<GameArgs> {
         } else if (action.payload.fen) {
           this.chess.load(action.payload.fen);
         }
+
         this.updateBoard();
+
+        const isGameOver = this.chess.game_over();
+
+        if (isGameOver) {
+          alert('Game over!');
+        }
       }
     );
 
