@@ -5,7 +5,9 @@
     {{#if this.hasOpponent}}
       <h2 class='text-2xl font-thin text-slate-80'>Ready to start!</h2>
 
-      <p>{{this.gameDetails.w}} vs {{this.gameDetails.b}}</p>
+      <p>
+        {{this.matchedOpponents}}
+      </p>
 
       <Button @intent='primary' {{on 'click' this.play}}>Play</Button>
     {{else}}

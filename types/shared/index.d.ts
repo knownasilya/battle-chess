@@ -11,7 +11,13 @@ export type RoomDetails = {
 
 export type Game = {
   id: string;
+  /**
+   * ID of user
+   */
   w?: string;
+  /**
+   * ID of user
+   */
   b?: string;
   turn: Side;
   fen?: string;

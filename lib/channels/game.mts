@@ -1,7 +1,14 @@
 import { Server } from '@logux/server';
 import { getOpponentsUserId, getSides } from '../utils.mjs';
-import { findGameOrThrow, games, hands } from '../state.mjs';
-import { Card } from 'shared';
+import {
+  findGame,
+  findGameOrThrow,
+  findUser,
+  findUserOrThrow,
+  games,
+  hands,
+} from '../state.mjs';
+import { Card, Game } from 'shared';
 
 /**
  * Most of the logic for the game is here
@@ -27,10 +34,11 @@ export default function gameChannel(server: Server) {
 
       const { yours } = getSides(ctx, game);
       const hand = hands.get(game);
+      const usersInGame = getGameUsers(game);
 
       return {
         type: `game/${ctx.params.id}/DETAILS`,
-        payload: { ...game, cards: hand?.[yours] },
+        payload: { ...game, cards: hand?.[yours], users: usersInGame },
       };
     },
   });
@@ -39,7 +47,7 @@ export default function gameChannel(server: Server) {
     'game/JOIN',
     {
       access(ctx, action) {
-        const game = games.find((g) => g.id === action.payload.gameId);
+        const game = findGame(action.payload.gameId);
 
         if (!game || (game?.b && game?.w)) {
           return false;
@@ -51,10 +59,11 @@ export default function gameChannel(server: Server) {
         return `game/${action.payload.gameId}`;
       },
       async process(ctx, action) {
-        const game = games.find((g) => g.id === action.payload.gameId);
+        const game = findGameOrThrow(action.payload.gameId);
+        const joiningUser = findUser(ctx.userId);
 
-        if (!game) {
-          return;
+        if (joiningUser) {
+          joiningUser.name = action.payload.name;
         }
 
         const { yours, opponents } = getSides(ctx, game);
@@ -65,10 +74,12 @@ export default function gameChannel(server: Server) {
           type: `game/${action.payload.gameId}/JOINED`,
         });
 
+        const usersInGame = getGameUsers(game);
+
         server.log.add(
           {
             type: `game/${action.payload.gameId}/DETAILS`,
-            payload: game,
+            payload: { ...game, users: usersInGame },
           },
           { channel: `game/${action.payload.gameId}` }
         );
@@ -187,4 +198,11 @@ export default function gameChannel(server: Server) {
       // test
     },
   });
+}
+
+function getGameUsers(game: Game) {
+  const userIds = [game.w, game.b].filter((id) => !!id) as string[];
+  const usersInGame = userIds.map((id) => findUser(id));
+
+  return usersInGame;
 }

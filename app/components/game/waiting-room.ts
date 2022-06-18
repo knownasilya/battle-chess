@@ -4,7 +4,7 @@ import { inject as service } from '@ember/service';
 import { useResource } from 'ember-resources';
 import RouterService from '@ember/routing/router-service';
 import { sync } from 'bchess/utils/sync';
-import { Game } from 'shared';
+import { Game, User } from 'shared';
 import { helper } from '@ember/component/helper';
 
 interface WaitingRoomArgs {
@@ -17,7 +17,7 @@ export default class WaitingRoom extends Component<WaitingRoomArgs> {
   channel = useResource(this, Channel, () => [`game/${this.args.gameId}`]);
 
   @sync('DETAILS', { local: true })
-  declare gameDetails?: Game;
+  declare gameDetails?: Game & { users: [User, User] };
 
   constructor(owner: object, args: any) {
     super(owner, args);
@@ -28,6 +28,14 @@ export default class WaitingRoom extends Component<WaitingRoomArgs> {
 
   get hasOpponent() {
     return this.gameDetails?.w && this.gameDetails.b;
+  }
+
+  get matchedOpponents() {
+    if (!this.gameDetails) {
+      return;
+    }
+
+    return `${this.gameDetails.users[0]?.name} vs ${this.gameDetails.users[1]?.name}`;
   }
 
   joinUrl = helper(() =>
