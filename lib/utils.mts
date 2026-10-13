@@ -1,5 +1,7 @@
 import { Context } from '@logux/server';
+import { Attributes } from 'sequelize/types/model';
 import { Game, Side } from 'shared';
+import { GameModelType } from './state.mjs';
 
 export function blackOrWhite(): Side {
   const num = rand();
@@ -10,12 +12,16 @@ function rand() {
   return Math.round(Math.random());
 }
 
-type Sides = { yours: Side; opponents: Side };
+export type Sides = { yours: Side; opponents: Side };
 
-export function getSides(ctx: Context, game: Game): Sides {
-  let yourSide = Object.keys(game).find(
-    (key) => (key === 'w' || key === 'b') && game[key as Side] === ctx.userId
-  ) as Side;
+export function getSides(
+  ctx: Context,
+  game: Game | Attributes<GameModelType>
+): Sides {
+  // Read sides directly, Sequelize instances expose them as prototype getters
+  const yourSide = (['w', 'b'] as const).find(
+    (side) => game[side] === ctx.userId
+  );
 
   // Assign you a side
   if (!yourSide) {

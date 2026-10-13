@@ -17,7 +17,7 @@ export default class WaitingRoom extends Component<WaitingRoomArgs> {
   channel = useResource(this, Channel, () => [`game/${this.args.gameId}`]);
 
   @sync('DETAILS', { local: true })
-  declare gameDetails?: Game & { users: [User, User] };
+  declare gameDetails?: Game & { users?: [User, User] };
 
   constructor(owner: object, args: any) {
     super(owner, args);
@@ -31,11 +31,13 @@ export default class WaitingRoom extends Component<WaitingRoomArgs> {
   }
 
   get matchedOpponents() {
-    if (!this.gameDetails) {
+    const users = this.gameDetails?.users;
+
+    if (!users) {
       return;
     }
 
-    return `${this.gameDetails.users[0]?.name} vs ${this.gameDetails.users[1]?.name}`;
+    return `${users[0]?.name} vs ${users[1]?.name}`;
   }
 
   joinUrl = helper(() =>

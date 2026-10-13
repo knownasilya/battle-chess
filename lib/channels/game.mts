@@ -1,99 +1,108 @@
 import { Server } from '@logux/server';
-import { getOpponentsUserId, getSides } from '../utils.mjs';
-import {
-  findGame,
-  findGameOrThrow,
-  games,
-  hands,
-  UserModel,
-} from '../state.mjs';
+import { getOpponentsUserId, getSides, Sides } from '../utils.mjs';
+import { GameModel, GameModelType, hands, UserModel } from '../state.mjs';
 import { Card, Game } from 'shared';
 
 /**
  * Most of the logic for the game is here
  */
 export default function gameChannel(server: Server) {
-  server.channel<{ id: string }>('game/:id', {
-    access(ctx) {
-      const game = findGameOrThrow(ctx.params.id);
-      const { yours } = getSides(ctx, game);
-
-      if (game[yours] && game[yours] !== ctx.userId) {
-        return false;
-      }
-
-      return true;
-    },
-
-    async load(ctx) {
-      const game = games.find((game) => game.id === ctx.params.id);
-      if (!game) {
-        throw new Error(`Game with id ${ctx.params.id} doesn't exist`);
-      }
-
-      const { yours } = getSides(ctx, game);
-      const hand = hands.get(game);
-      const usersInGame = await getGameUsers(game);
-
-      return {
-        type: `game/${ctx.params.id}/DETAILS`,
-        payload: { ...game, cards: hand?.[yours], users: usersInGame },
-      };
-    },
-  });
-
-  server.type<{ type: string; payload: { gameId: string; name: string } }>(
-    'game/JOIN',
+  server.channel<{ id: string }, { game: GameModelType; sides: Sides }>(
+    'game/:id',
     {
-      access(ctx, action) {
-        const game = findGame(action.payload.gameId);
+      async access(ctx) {
+        const game = await GameModel.findByPk(ctx.params.id);
 
-        if (!game || (game?.b && game?.w)) {
+        if (!game) {
+          throw new Error(`Game with id ${ctx.params.id} doesn't exist`);
+        }
+
+        const sides = getSides(ctx, game.toJSON());
+
+        if (game[sides.yours] && game[sides.yours] !== ctx.userId) {
           return false;
         }
 
+        ctx.data.sides = sides;
+        ctx.data.game = game;
+
         return true;
       },
-      resend(ctx, action) {
-        return `game/${action.payload.gameId}`;
-      },
-      async process(ctx, action) {
-        const game = findGameOrThrow(action.payload.gameId);
-        const joiningUser = await UserModel.findByPk(ctx.userId);
 
-        if (joiningUser) {
-          joiningUser.name = action.payload.name;
-          await joiningUser.save();
-        }
-
-        const { yours, opponents } = getSides(ctx, game);
-        console.log({ yours, opponents, game, userId: ctx.userId });
-        game[yours] = ctx.userId;
-
-        ctx.sendBack({
-          type: `game/${action.payload.gameId}/JOINED`,
-        });
-
+      async load(ctx) {
+        const game = ctx.data.game.toJSON();
+        const { yours } = getSides(ctx, game);
+        const hand = hands.get(game.id);
         const usersInGame = await getGameUsers(game);
 
-        server.log.add(
-          {
-            type: `game/${action.payload.gameId}/DETAILS`,
-            payload: { ...game, users: usersInGame },
-          },
-          { channel: `game/${action.payload.gameId}` }
-        );
+        return {
+          type: `game/${ctx.params.id}/DETAILS`,
+          payload: { ...game, cards: hand?.[yours], users: usersInGame },
+        };
       },
     }
   );
 
-  server.type<{ type: string; payload: { gameId: string } }>('game/PLAY', {
-    access(ctx, action) {
-      const game = games.find((g) => g.id === action.payload.gameId);
+  server.type<
+    { type: string; payload: { gameId: string; name: string } },
+    { game: GameModelType }
+  >('game/JOIN', {
+    async access(ctx, action) {
+      const game = await GameModel.findByPk(action.payload.gameId);
+
+      if (!game || (game?.b && game?.w)) {
+        return false;
+      }
+
+      ctx.data.game = game;
+
+      return true;
+    },
+    resend(ctx, action) {
+      return `game/${action.payload.gameId}`;
+    },
+    async process(ctx, action) {
+      const game = ctx.data.game;
+      const joiningUser = await UserModel.findByPk(ctx.userId);
+
+      if (joiningUser) {
+        joiningUser.name = action.payload.name;
+        await joiningUser.save();
+      }
+
+      const { yours, opponents } = getSides(ctx, game);
+      console.log({ yours, opponents, game, userId: ctx.userId });
+      game[yours] = ctx.userId;
+      await game.save();
+
+      ctx.sendBack({
+        type: `game/${action.payload.gameId}/JOINED`,
+      });
+
+      const usersInGame = await getGameUsers(game);
+
+      server.log.add(
+        {
+          type: `game/${action.payload.gameId}/DETAILS`,
+          payload: { ...game.toJSON(), users: usersInGame },
+        },
+        { channel: `game/${action.payload.gameId}` }
+      );
+    },
+  });
+
+  server.type<
+    { type: string; payload: { gameId: string } },
+    { game: GameModelType }
+  >('game/PLAY', {
+    async access(ctx, action) {
+      const game = await GameModel.findByPk(action.payload.gameId);
 
       if (!game || !game?.b || !game?.w) {
         return false;
       }
+
+      ctx.data.game = game;
 
       return true;
     },
@@ -110,26 +119,24 @@ export default function gameChannel(server: Server) {
     },
   });
 
-  server.type<{
-    type: string;
-    payload: {
-      fen: string;
-      gameId: string;
-      move: { from: string; to: string };
-      cardIdPlayed?: Card['id'];
-    };
-  }>('game/MOVE_PIECE', {
-    access(ctx, action) {
-      let game;
+  server.type<
+    {
+      type: string;
+      payload: {
+        fen: string;
+        gameId: string;
+        move: { from: string; to: string };
+        cardIdPlayed?: Card['id'];
+      };
+    },
+    { game: GameModelType }
+  >('game/MOVE_PIECE', {
+    async access(ctx, action) {
+      const game = await GameModel.findByPk(action.payload.gameId);
 
-      try {
-        game = findGameOrThrow(action.payload.gameId);
-      } catch (e) {
-        console.error(e);
+      if (!game) {
         return false;
       }
-
-      console.log(game);
 
       const isDark = game.b === ctx.userId;
       const isLight = game.w === ctx.userId;
@@ -143,18 +150,20 @@ export default function gameChannel(server: Server) {
 
       const { yours } = getSides(ctx, game);
 
+      ctx.data.game = game;
+
       return (yours === 'w' && isLight) || (yours === 'b' && isDark);
     },
     resend(ctx, action) {
       return `game/${action.payload.gameId}`;
     },
     async process(ctx, action) {
-      const game = findGameOrThrow(action.payload.gameId);
+      const game = ctx.data.game;
 
       if (game) {
         game.fen = action.payload.fen;
         const { yours } = getSides(ctx, game);
-        const hand = hands.get(game);
+        const hand = hands.get(game.id);
         const yourHand = hand?.[yours];
 
         // Update your hand
